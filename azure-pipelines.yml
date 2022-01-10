@@ -77,6 +77,9 @@ stages:
     pool:
       vmImage: $(vmImageName)
     steps:
+    - download: current
+      artifact: drop
+
     - task: AzureCLI@2
       displayName: Disable all timer triggered functions
       inputs:

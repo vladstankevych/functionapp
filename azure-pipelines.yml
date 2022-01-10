@@ -93,7 +93,7 @@ stages:
                 set -o errexit
                 set -o xtrace
                 conf_value="https://cpfrPython:aaa@pkgs.dev.azure.com/dh-platforms-devops/app-cdh-lp-ja-03/_packaging/cpfrPython%40Local/pypi/simple/"
-                az functionapp config appsettings set -n $(functionAppLinux) -g testgroup --settings "PIP_EXTRA_INDEX_URL=$conf_value" "WEBSITE_RUN_FROM_PACKAGE=1"
+                az functionapp config appsettings set -n $(functionAppName) -g testgroup --settings "PIP_EXTRA_INDEX_URL=$conf_value" "WEBSITE_RUN_FROM_PACKAGE=1"
 
           - task: AzureFunctionApp@1
             displayName: 'Azure functions app deploy'

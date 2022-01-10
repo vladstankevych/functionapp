@@ -83,14 +83,6 @@ stages:
         deploy:
 
           steps:
-          - task: AzureFunctionApp@1
-            displayName: 'Azure functions app deploy'
-            inputs:
-              azureSubscription: '$(azureSubscription)'
-              appType: functionAppLinux
-              appName: $(functionAppName)
-              package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
-
           - task: AzureCLI@2
             displayName: Disable all timer triggered functions
             inputs:
@@ -102,3 +94,11 @@ stages:
                 set -o xtrace
                 conf_value="https://cpfrPython:aaa@pkgs.dev.azure.com/dh-platforms-devops/app-cdh-lp-ja-03/_packaging/cpfrPython%40Local/pypi/simple/"
                 az functionapp config appsettings set -n $(functionAppLinux) -g testgroup --settings "PIP_EXTRA_INDEX_URL=$conf_value" "WEBSITE_RUN_FROM_PACKAGE=1"
+
+          - task: AzureFunctionApp@1
+            displayName: 'Azure functions app deploy'
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              appType: functionAppLinux
+              appName: $(functionAppName)
+              package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'

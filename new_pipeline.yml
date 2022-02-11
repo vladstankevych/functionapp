@@ -52,7 +52,7 @@ stages:
         containerRegistry: playground-docker
 
     - script: |
-        docker login acrlaunchtestvlad.azurecr.io --username 7fe32dfd-4b2e-488b-ad16-daf29a9405dc --password $(temp_password)
+        docker login acrlaunchtestvlad.azurecr.io --username 7fe32dfd-4b2e-488b-ad16-daf29a9405dc --password _mx7Q~VKHoG1qZ_diiMrVkGNrVHZ5xCp_gcX2
         # docker login $(ContainerRegistryName).azurecr.io --username $(az-sp-extended-devops-app-ja-03ut-ID) --password $(az-sp-extended-devops-app-ja-03ut-KEY)
     
     - task: Docker@2

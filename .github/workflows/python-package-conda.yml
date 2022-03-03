@@ -27,7 +27,10 @@ jobs:
       run: |
         echo "Issue title: ${{ github.event.issue.title }}"
         echo "Issue body: ${{ github.event.issue.body }}"
-        echo "${{ github.event.issue.pull_request }}"
-        echo "${{ github.event.issue }}"
-        echo "${{ github.event.issue_comment }}"
-        echo "${{ github.event.issue_comment.body }}"
+        echo "${{ github.event.issue.pull_request }}" > file.txt
+        echo "${{ github.event.issue }}" >> file.txt
+        echo "${{ github.event.issue.comments }}" >> file.txt
+        echo "${{ github.event.issue.comments.*.body }}" >> file.txt
+        echo "${{ github.event.comment.body }}" >> file.txt
+        cat file.txt
+        echo "jq -r '.' ${{ github.event.issue }}"

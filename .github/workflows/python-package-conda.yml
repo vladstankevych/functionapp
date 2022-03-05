@@ -25,12 +25,15 @@ jobs:
       with:
         ref: ${{ fromJson(steps.get_pull_request_ref.outputs.data).head.ref }}
         fetch-depth: 0
-        
+
     - name: Echo PR comment
+      env:
+        GITHUB_REF: "refs/heads/${{ fromJson(steps.get_pull_request_ref.outputs.data).head.ref }}"
+        GITHUB_SHA: ${{ fromJson(steps.get_pull_request_ref.outputs.data).head.sha }}
       run: |
-        $GITHUB_REF="refs/heads/${{ fromJson(steps.get_pull_request_ref.outputs.data).head.ref }}"
-        $GITHUB_SHA=${{ fromJson(steps.get_pull_request_ref.outputs.data).head.sha }}
         echo "---------"
+        # $GITHUB_REF="refs/heads/${{ fromJson(steps.get_pull_request_ref.outputs.data).head.ref }}"
+        # $GITHUB_SHA=${{ fromJson(steps.get_pull_request_ref.outputs.data).head.sha }}
         echo $GITHUB_REF
         echo $GITHUB_SHA
         echo "---------"

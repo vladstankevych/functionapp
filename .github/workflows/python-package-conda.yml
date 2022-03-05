@@ -16,7 +16,7 @@ jobs:
       run: |
         echo "${{ github.event.comment.body }}"
         echo "${{ github.ref }}"
-        echo "${{ github.base_ref }}"
+        echo "${GITHUB_REF}"
 
     - name: Checkout Pull Request
       run: hub pr checkout ${{ github.event.issue.number }}

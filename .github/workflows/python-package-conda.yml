@@ -37,17 +37,6 @@ jobs:
         git branch
         cat Dockerfile
 
-#    - name: Checkout Pull Request
-#      run: hub pr checkout ${{ github.event.issue.number }}
-#      env:
-#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        
-#    - name: Echo PR comment
-#      run: |
-#        echo "${{ github.event.comment.body }}"
-#        echo "${{ github.ref }}"
-#        echo "${{ github.base_ref }}"
-
     - name: Azure Pipelines Action
       uses: Azure/pipelines@v1.2
       with:

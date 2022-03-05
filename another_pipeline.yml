@@ -16,5 +16,6 @@ stages:
     - bash: |
         echo "Here we go"
         echo $(output)
-        echo $[variables['check_if_works']]
+        echo $(check_if_works)
+        echo $[variables.check_if_works]
 

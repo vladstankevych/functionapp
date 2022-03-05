@@ -30,6 +30,10 @@ jobs:
       run: |
         echo $GITHUB_REF
         echo $GITHUB_SHA
+        echo "---------"
+        echo ${{ fromJson(steps.get_pull_request_ref.outputs.data).head.ref }}
+        echo ${{ fromJson(steps.get_pull_request_ref.outputs.data).head.sha }}
+        echo "---------"
         echo "${{ github.event.comment.body }}"
         echo "${{ github.ref }}"
         echo "${{ github.event.issue.pull_request }}"

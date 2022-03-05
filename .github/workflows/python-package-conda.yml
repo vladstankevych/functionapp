@@ -16,7 +16,8 @@ jobs:
       run: |
         echo "${{ github.event.comment.body }}"
         echo "${{ github.ref }}"
-        echo "${GITHUB_REF}"
+        git branch
+        cat Dockerfile
 
     - name: Checkout Pull Request
       run: hub pr checkout ${{ github.event.issue.number }}

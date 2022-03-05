@@ -29,8 +29,8 @@ jobs:
     - name: Echo PR comment
       run: |
         echo "---------"
-        export GITHUB_REF="refs/heads/${{ fromJson(steps.get_pull_request_ref.outputs.data).head.ref }}"
-        export GITHUB_SHA=${{ fromJson(steps.get_pull_request_ref.outputs.data).head.sha }}
+        echo 'GITHUB_REF="refs/heads/${{ fromJson(steps.get_pull_request_ref.outputs.data).head.ref }}"' >> $GITHUB_ENV
+        echo 'GITHUB_SHA=${{ fromJson(steps.get_pull_request_ref.outputs.data).head.sha }}' >> $GITHUB_ENV
         echo $GITHUB_REF
         echo $GITHUB_SHA
         echo "---------"

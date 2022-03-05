@@ -11,12 +11,12 @@ jobs:
     if: ${{ github.event.issue.pull_request }}
     runs-on: ubuntu-latest
     steps:
-#    - uses: actions/checkout@v2
+    - uses: actions/checkout@v2
     - name: Echo PR comment
       run: |
         echo "${{ github.event.comment.body }}"
         echo "${{ github.ref }}"
-        git branch
+        echo "${{ github.event.pull_request.head.sha }}"
         cat Dockerfile
 
     - name: Checkout Pull Request

@@ -31,18 +31,19 @@ jobs:
         echo "---------"
         echo 'GITHUB_REF="refs/heads/${{ fromJson(steps.get_pull_request_ref.outputs.data).head.ref }}"' >> $GITHUB_ENV
         echo 'GITHUB_SHA=${{ fromJson(steps.get_pull_request_ref.outputs.data).head.sha }}' >> $GITHUB_ENV
-        echo $GITHUB_REF
-        echo $GITHUB_SHA
         echo "---------"
         echo ${{ fromJson(steps.get_pull_request_ref.outputs.data).head.ref }}
         echo ${{ fromJson(steps.get_pull_request_ref.outputs.data).head.sha }}
         echo "---------"
-        echo "${{ github.event.comment.body }}"
-        echo "${{ github.ref }}"
-        git branch
+        # echo "${{ github.event.comment.body }}"
+        # echo "${{ github.ref }}"
+        # git branch
         cat $GITHUB_ENV
-        ls -al
-        ls -al /
+        ls -al /home
+        ls -al /home/runner
+        ls -al /home/runner/work/
+        ls -al /home/runner/work/_temp/
+        ls -al /home/runner/work/_temp/_runner_file_commands/
         
     - name: Echo updated variables
       run: |

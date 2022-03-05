@@ -39,11 +39,13 @@ jobs:
         # echo "${{ github.ref }}"
         # git branch
         cat $GITHUB_ENV
-        ls -al /home
-        ls -al /home/runner
-        ls -al /home/runner/work/
-        ls -al /home/runner/work/_temp/
-        ls -al /home/runner/work/_temp/_runner_file_commands/
+        ls -al /home/runneradmin
+        cat /home/runner/.bash_profile
+        cat /home/runner/.bashrc
+        cat /home/runner/.profile
+        ls -al /home/runner/work/_PipelineMapping
+        ls -al /home/runner/work/_temp/_github_workflow
+        cat /home/runner/work/_temp/*.sh
         
     - name: Echo updated variables
       run: |

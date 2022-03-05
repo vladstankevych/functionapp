@@ -28,6 +28,8 @@ jobs:
         
     - name: Echo PR comment
       run: |
+        echo $GITHUB_REF
+        echo $GITHUB_SHA
         echo "${{ github.event.comment.body }}"
         echo "${{ github.ref }}"
         echo "${{ github.event.issue.pull_request }}"

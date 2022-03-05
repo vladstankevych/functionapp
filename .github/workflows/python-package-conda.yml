@@ -39,10 +39,14 @@ jobs:
         echo "---------"
         echo "${{ github.event.comment.body }}"
         echo "${{ github.ref }}"
-        echo "${{ github.event.issue.pull_request }}"
-        echo "${{ github.event.issue.pull_request.head.sha }}"
         git branch
         cat Dockerfile
+        
+    - name: Echo updated variables
+      run: |
+        echo "---------"
+        echo $GITHUB_REF
+        echo $GITHUB_SHA
 
 #    - name: Checkout Pull Request
 #      run: hub pr checkout ${{ github.event.issue.number }}

@@ -28,7 +28,7 @@ jobs:
         echo "${{ github.event.comment.body }}"
 
     - name: Azure Pipelines Action
-      uses: Azure/pipelines@v1
+      uses: Azure/pipelines@v1.2
       with:
         azure-devops-project-url: https://dev.azure.com/stankevychvladyslav/test_project
         azure-pipeline-name: 'Test_pipeline'

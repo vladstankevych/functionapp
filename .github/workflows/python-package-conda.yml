@@ -40,7 +40,7 @@ jobs:
         echo "${{ github.event.comment.body }}"
         echo "${{ github.ref }}"
         git branch
-        cat .bashrc
+        echo $GITHUB_ENV
         ls -al
         ls -al /
         

@@ -12,6 +12,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: Echo PR comment
+      run: |
+        echo "${{ github.event.comment.body }}"
+
+    - name: Azure Pipelines Action
+      uses: Azure/pipelines@v1.2
+      with:
+        azure-devops-project-url: https://dev.azure.com/stankevychvladyslav/test_project
+        azure-pipeline-name: 'Test_pipeline'
+        azure-devops-token: ${{ secrets.AZURE_DEVOPS_TOKEN }}
+        azure-pipeline-variables:  '{"check_if_works": "IT WORKS"}'
+        
 #    - name: Set up Python 3.10
 #      uses: actions/setup-python@v2
 #      with:
@@ -23,14 +35,3 @@ jobs:
 #    - name: Install dependencies
 #      run: |
 #        conda env update --file environment.yml --name base
-    - name: Echo PR comment
-      run: |
-        echo "${{ github.event.comment.body }}"
-
-    - name: Azure Pipelines Action
-      uses: Azure/pipelines@v1
-      with:
-        azure-devops-project-url: https://dev.azure.com/stankevychvladyslav/test_project
-        azure-pipeline-name: 'Test_pipeline'
-        azure-devops-token: ${{ secrets.AZURE_DEVOPS_TOKEN }}
-        azure-pipeline-variables:  '{"check_if_works": "IT WORKS"}'

@@ -1,8 +1,8 @@
 name: Run on PR comment
 
-on: 
-  issue_comment:
-    types: [created]
+on: workflow_dispatch 
+#  issue_comment:
+#    types: [created]
 
 jobs:
   pr_commented:
@@ -11,12 +11,27 @@ jobs:
     if: ${{ github.event.issue.pull_request }}
     runs-on: ubuntu-latest
     steps:
+    - name: get pull request ref
+      id: get_pull_request_ref
+      uses: octokit/request-action@v2.x
+      with:
+        route: GET /repos/:repository/pulls/:issue_id
+        repository: ${{ github.repository }}
+        issue_id: ${{ github.event.issue.number }}
+      env:
+        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        
     - uses: actions/checkout@v2
+      with:
+        ref: ${{ fromJson(steps.get_pull_request_ref.outputs.data).head.ref }}
+        fetch-depth: 0
+        
     - name: Echo PR comment
       run: |
         echo "${{ github.event.comment.body }}"
         echo "${{ github.ref }}"
-        git branch
+        echo "${{ github.event.issue.pull_request }}"
+        echo "${{ github.event.issue.pull_request.head.sha }}"
         cat Dockerfile
 
     - name: Checkout Pull Request

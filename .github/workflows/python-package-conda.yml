@@ -16,7 +16,8 @@ jobs:
       run: |
         echo "${{ github.event.comment.body }}"
         echo "${{ github.ref }}"
-        echo "${{ github.event.pull_request.head.sha }}"
+        echo "${{ github.event.issue.pull_request }}"
+        echo "${{ github.event.issue.pull_request.head.sha }}"
         cat Dockerfile
 
     - name: Checkout Pull Request

@@ -1,7 +1,7 @@
 FROM python:3.9
 
 RUN echo "a" \
-    && echo "b"
+    && echo "NOOOO"
 
 RUN echo "IT'S FEATURE"
  

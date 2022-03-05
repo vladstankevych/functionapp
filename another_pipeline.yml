@@ -1,0 +1,25 @@
+trigger:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - src
+
+
+variables:
+  output: "NO_OUTPUT"
+  
+stages:
+- stage: First
+  displayName: Stage
+  jobs:
+  - job: First_job
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - bash: |
+        echo "Here we go"
+        echo $(output)
+        echo $[variables['check_if_works']]
+

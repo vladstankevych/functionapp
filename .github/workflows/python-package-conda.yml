@@ -25,12 +25,12 @@ jobs:
 #        conda env update --file environment.yml --name base
     - name: Echo PR comment
       run: |
-        echo "Issue title: ${{ github.event.issue.title }}"
-        echo "Issue body: ${{ github.event.issue.body }}"
-        echo "${{ github.event.issue.pull_request }}" > file.txt
-        echo "${{ github.event.issue }}" >> file.txt
-        echo "${{ github.event.issue.comments }}" >> file.txt
-        echo "${{ github.event.issue.comments.*.body }}" >> file.txt
-        echo "${{ github.event.comment.body }}" >> file.txt
-        cat file.txt
-        echo "jq -r '.' ${{ github.event.issue }}"
+        echo "${{ github.event.comment.body }}"
+
+    - name: Azure Pipelines Action
+      uses: Azure/pipelines@v1
+      with:
+        azure-devops-project-url: https://dev.azure.com/stankevychvladyslav/test_project
+        azure-pipeline-name: 'Test_pipeline'
+        azure-devops-token: ${{ secrets.AZURE_DEVOPS_TOKEN }}
+        azure-pipeline-variables:  '{"check_if_works": "IT WORKS"}'

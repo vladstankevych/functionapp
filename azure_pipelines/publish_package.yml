@@ -1,0 +1,39 @@
+# This pipeline publishes the CPFR Ecom library
+
+# Triggers on "version" tags only
+trigger:
+  tags:
+    include:
+      - "v*.*"
+  branches:
+    exclude:
+      - "*"
+
+pr: none # disable pull request builds
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - script: |
+      pip install twine keyring artifacts-keyring
+    displayName: Install Twine & Keyring
+  - task: TwineAuthenticate@1
+    displayName: Twine Authenticate
+    inputs:
+      artifactFeed: "app-cdh-lp-ja-03/cpfrPython"
+      pythonUploadServiceConnection: "Azure Artifacts Twine"
+  - task: PipAuthenticate@1
+    displayName: Pip Authenticate (Azure Artifacts)
+    inputs:
+      artifactFeeds: "app-cdh-lp-ja-03/cpfrPython"
+      onlyAddExtraIndex: true
+  - task: Bash@3
+    displayName: Build and upload wheel package
+    inputs:
+      targetType: inline
+      script: |
+        set -o errexit
+        python setup.py sdist bdist_wheel
+        python -m twine upload -r cpfrPython --config-file $(PYPIRC_PATH) dist/*
+        wheelpath=`ls dist/*.whl | awk '{print $1}'`

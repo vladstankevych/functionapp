@@ -1,0 +1,25 @@
+{
+  "cluster_name": "CLUSTER_NAME",
+  "cluster_id": "CLUSTER_ID",
+  "autoscale": {
+    "min_workers": 1,
+    "max_workers": 3
+  },
+  "spark_version": "9.1.x-scala2.12",
+  "node_type_id": "Standard_D8s_v3",
+  "driver_node_type_id": "Standard_D16s_v3",
+  "docker_image": {
+    "url": "[ACR_NAME].azurecr.io/[REPOSITORY_NAME]:[IMAGE_TAG]",
+    "basic_auth": {
+      "username": "DOCKER_LOGIN",
+      "password": "DOCKER_PASSWORD"
+    }
+  },
+  "spark_conf": {
+    "spark.databricks.delta.preview.enabled": "true",
+    "spark.driver.memory": "56g",
+    "spark.driver.maxResultSize": "48g"
+  },
+  "autotermination_minutes": 20,
+  "enable_elastic_disk": true
+}

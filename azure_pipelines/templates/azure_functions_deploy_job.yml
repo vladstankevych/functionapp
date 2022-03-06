@@ -1,0 +1,50 @@
+steps:
+- task: ArchiveFiles@2
+  displayName: 'Archive files'
+  inputs:
+    rootFolderOrFile: '$(workingDirectory)'
+    includeRootFolder: false
+    archiveType: zip
+    archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+    replaceExistingArchive: true
+
+- task: AzureFunctionApp@1
+  displayName: 'Azure functions app deploy'
+  inputs:
+    azureSubscription: $(FunctionAppSubscription)
+    appType: functionAppLinux
+    appName: $(FunctionAppName)
+    package: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    deployToSlotOrASE: true
+    resourceGroupName: $(FunctionAppRG)
+    slotName: $(SlotName)
+
+- task: AzureAppServiceManage@0
+  condition: and(succeeded(), or(and(eq(variables.Stage, 'Dev'), eq(variables.SlotName, 'ecpfr-MainBranchIntegration')), eq(variables.Stage, 'Staging'), eq(variables.Stage, 'Production')))
+  inputs:
+    azureSubscription: $(FunctionAppSubscription)
+    WebAppName: $(FunctionAppName)
+    ResourceGroupName: $(FunctionAppRG)
+    SourceSlot: $(SlotName)
+    SwapWithProduction: true
+
+- task: AzureCLI@2
+  displayName: Disable all timer triggered functions in the slot after the swap
+  condition: and(succeeded(), or(and(eq(variables.Stage, 'Dev'), eq(variables.SlotName, 'ecpfr-MainBranchIntegration')), eq(variables.Stage, 'Staging'), eq(variables.Stage, 'Production')))
+  inputs:
+    azureSubscription: $(FunctionAppSubscription)
+    scriptType: bash
+    scriptLocation: inlineScript
+    inlineScript: |
+      set -o errexit
+      set -o xtrace
+      cd $(workingDirectory)
+      for d in $(ls -d */); do
+        if [ -f "$d/function.json" ]; then
+            func_type=`jq '.bindings[] | select(.type=="timerTrigger") | .type' $d/function.json`
+            if [ ! -z $func_type ]; then
+                    rule_name="AzureWebJobs".${d%%/}."Disabled"
+                    az functionapp config appsettings set -n $(FunctionAppName) -g $(FunctionAppRG) -s $(SlotName) --settings "$rule_name=true"
+            fi
+        fi
+      done

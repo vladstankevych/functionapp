@@ -1,0 +1,71 @@
+trigger: none
+
+pr: none
+
+variables:
+  - name: vmImageName
+    value: 'ubuntu-latest'
+  - name: workingDirectory
+    value: '$(System.DefaultWorkingDirectory)/src/cpfr/ecom/azure_functions'
+  - group: ecommerce-uat-variables
+  - group: ecommerce-general-variables
+
+pool:
+  name: $(AgentsPoolName)
+
+stages:
+- stage: Prepare_DeploymentSlot
+  displayName: Prepare deployment slot
+  jobs:
+  - template: templates/prepare_deployment_slot.yml
+
+- stage: Deploy_AzureFunctions
+  displayName: Deploy the Azure Functions
+  dependsOn: Prepare_DeploymentSlot
+  condition: succeeded()
+  variables:
+    - name: SlotName
+      value: $[ stageDependencies.Prepare_DeploymentSlot.CheckSlot.outputs['NameVars.SlotName'] ]
+  jobs:
+  - job: Deploy_AzureFunctions
+    displayName: Deploy the Azure Functions
+    steps:
+    - template: templates/azure_functions_deploy_job.yml
+
+- stage: Build_docker
+  displayName: Build the Docker image
+  dependsOn: []
+  jobs:
+  - job: build_docker_image
+    displayName: Build the Docker image
+    timeoutInMinutes: 0
+    steps:
+    - template: templates/docker_image_build.yml
+
+- stage: Update_DB
+  displayName: Update the Job DB
+  dependsOn: Build_docker
+  condition: succeeded()
+  jobs:
+  - job: update_db
+    displayName: Update Job DB
+    steps:
+    - template: templates/update_job_db.yml
+      parameters:
+        SP_ID: $(az-sp-extended-devops-app-ja-03ut-ID)
+        SP_Secret: $(az-sp-extended-devops-app-ja-03ut-KEY)
+
+- stage: Spin_up_cluster
+  displayName: Spin up the cluster
+  dependsOn: Build_docker
+  condition: succeeded()
+  variables:
+  - name: ClusterName
+    value: $[ stageDependencies.Build_docker.build_docker_image.outputs['NameVars.ClusterName'] ]
+  - name: ImageTag
+    value: $[ stageDependencies.Build_docker.build_docker_image.outputs['NameVars.SlotName'] ]
+  jobs:
+  - job: launch_databricks_cluster
+    displayName: Spin up the Databricks cluster with the built image
+    steps:
+    - template: templates/run_databricks_cluster.yml

@@ -1,0 +1,19 @@
+trigger: none
+
+pr: none
+
+variables:
+  output: "NO_OUTPUT"
+  
+stages:
+- stage: First
+  displayName: Stage
+  jobs:
+  - job: First_job
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - bash: |
+        echo "Here we go"
+        echo $(part)
+        echo $(cluster_size)

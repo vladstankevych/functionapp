@@ -1,0 +1,101 @@
+steps:
+- task: AzureKeyVault@1
+  displayName: "Azure Key Vault: $(KeyVaultName)"
+  inputs:
+    azureSubscription: $(ServiceConnectionName)
+    KeyVaultName: $(KeyVaultName)
+    SecretsFilter: "*"
+    RunAsPreJob: true
+
+- task: Bash@3
+  displayName: "Configure Databricks CLI"
+  inputs:
+    targetType: inline
+    script: |
+      pip install databricks-cli==0.14.3
+      path_to_packages=$(pwd | cut -d "/" -f1-4)
+      PATH="$path_to_packages/.local/bin:$PATH"
+      echo "##vso[task.setvariable variable=PackagesPath]$path_to_packages"
+      set -o errexit
+      conf=`cat << EOM
+      $(DatabricksWorkspaceUrl)
+      $(databricks-token)
+      EOM`
+      echo "$conf" | databricks configure --token
+
+- task: Bash@3
+  displayName: "Create or Get cluster"
+  inputs:
+    targetType: inline
+    script: |
+      set -o errexit
+      set -o xtrace
+      PATH="$(PackagesPath)/.local/bin:$PATH"
+      cluster_config_name="azure_pipelines/config/ci_cluster/default.json"
+      cluster_id=$(databricks clusters list | awk '{ if ( $2 == "$(ClusterName)" ) print $1}')
+
+      path_to_cluster_configs="$(Build.SourcesDirectory)/$cluster_config_name"
+      sed -i "s/CLUSTER_NAME/$(ClusterName)/" "$path_to_cluster_configs"
+      sed -i "s/DOCKER_LOGIN/$(acr-username)/" "$path_to_cluster_configs"
+      sed -i "s|DOCKER_PASSWORD|$(acr-password)|" "$path_to_cluster_configs"
+      sed -i "s|\[REPOSITORY_NAME\]|$(EcpfrImageRepo)|" "$path_to_cluster_configs"
+      sed -i "s|\[IMAGE_TAG\]|$(ImageTag)|" "$path_to_cluster_configs"
+      sed -i "s|\[ACR_NAME\]|$(ContainerRegistryName)|" "$path_to_cluster_configs"
+
+      if [ -z "$cluster_id" ]
+      then
+      echo "No cluster found - creating..."
+
+      sed -i "/cluster_id/d" "$path_to_cluster_configs"
+      cluster_id=$(databricks clusters create --json-file "$path_to_cluster_configs" | jq -r ".cluster_id")
+      sleep 10
+
+      else
+      sed -i "s/CLUSTER_ID/$cluster_id/" "$path_to_cluster_configs"
+      cluster_state=$(databricks clusters get --cluster-id "$cluster_id" | jq -r ".state")
+      while [ $cluster_state == "PENDING" ] || [ $cluster_state == "RESTARTING" ] || [ $cluster_state == "RESIZING" ]
+      do
+        sleep 10
+        cluster_state=$(databricks clusters get --cluster-id "$cluster_id" | jq -r ".state")
+        echo "Cluster state: $cluster_state"
+      done
+
+      databricks clusters edit --json-file "$path_to_cluster_configs"
+
+      fi
+      echo "Uninstalling all libraries"
+      databricks libraries uninstall --all --cluster-id $cluster_id
+
+      echo "Cluster ID: $cluster_id"
+
+- task: Bash@3
+  displayName: "Spin up the cluster"
+  inputs:
+    targetType: inline
+    script: |
+      set -o errexit
+      PATH="$(PackagesPath)/.local/bin:$PATH"
+      cluster_id=$(databricks clusters list | awk '{ if ( $2 == "$(ClusterName)" ) print $1}')
+      echo "Checking state for cluster ID $cluster_id ..."
+      cluster_state=$(databricks clusters get --cluster-id "$cluster_id" | jq -r ".state")
+      echo "Cluster state: $cluster_state"
+      if [ $cluster_state == "TERMINATED" ]
+      then
+        echo "Starting cluster..."
+        databricks clusters start --cluster-id "$cluster_id"
+        sleep 30
+        cluster_state=$(databricks clusters get --cluster-id "$cluster_id" | jq -r ".state")
+        echo "Cluster state: $cluster_state"
+      fi
+      while [ $cluster_state == "PENDING" ] || [ $cluster_state == "RESTARTING" ] || [ $cluster_state == "RESIZING" ]
+      do
+        sleep 10
+        cluster_state=$(databricks clusters get --cluster-id "$cluster_id" | jq -r ".state")
+        echo "Cluster state: $cluster_state"
+      done
+      if [ $cluster_state == "RUNNING" ]
+      then
+        exit 0
+      else
+        exit 1
+      fi

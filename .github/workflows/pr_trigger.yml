@@ -51,7 +51,7 @@ jobs:
         fi
     
     # Install nodejs for script to run Azure Pipeline
-    - uses: actions/setup-node@v2
+    - uses: actions/setup-node@v3
       if: env.invoke
       with:
         node-version: '14'

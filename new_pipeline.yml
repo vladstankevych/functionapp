@@ -9,7 +9,7 @@ pr: none
 
 variables:
   SlotName: 'ecpfr-uat'
-  vmImageName: 'ubuntu-latest'
+  vmImageName: 'ubuntu-latesti'
   AgentsPoolName: TEST
   workingDirectory: '$(System.DefaultWorkingDirectory)/src/ecpfr/project'
 

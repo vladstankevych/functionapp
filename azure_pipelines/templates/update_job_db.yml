@@ -1,0 +1,49 @@
+parameters:
+- name: 'SP_ID'
+  type: string
+  default: ''
+- name: 'SP_Secret'
+  type: string
+  default: ''
+
+steps:
+- task: AzureKeyVault@1
+  displayName: "Azure Key Vault: $(KeyVaultName)"
+  inputs:
+    azureSubscription: $(ServiceConnectionName)
+    KeyVaultName: $(KeyVaultName)
+    SecretsFilter: "*"
+    RunAsPreJob: true
+
+- task: AzureCLI@2
+  displayName: Wake up the database
+  condition: succeeded()
+  inputs:
+    azureSubscription: $(ServiceConnectionName)
+    scriptType: bash
+    scriptLocation: inlineScript
+    inlineScript: |
+      az sql db classification list -n $(DatabaseName) -g $(ResourceGroup) -s $(ServerName) 2>nul
+      attempt_number=0
+      while [ $attempt_number -lt 20 ]; do
+        is_online=$(az sql db show -n $(DatabaseName) -g $(ResourceGroup) -s $(ServerName) --query status -o tsv)
+        if [ "$is_online" == "Online" ]; then
+          break
+        fi
+        sleep 15
+        attempt_number=$((attempt_number+1))
+      done
+      if [ $attempt_number -ge 20 ]; then
+        exit 1
+      fi
+
+- task: Bash@3
+  displayName: "Update job DB"
+  condition: succeeded()
+  inputs:
+    targetType: inline
+    script: |
+      set -o errexit
+      set -o xtrace
+      cd $(Build.SourcesDirectory)/db_migrations
+      DATABASE_HOST=$(DatabaseHost) DATABASE_NAME=$(DatabaseName) SP_ID=${{ parameters.SP_ID }} SP_SECRET=${{ parameters.SP_Secret }} CONTEXTS=$(Stage) mvn liquibase:update

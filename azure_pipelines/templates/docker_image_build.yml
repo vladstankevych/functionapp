@@ -1,0 +1,73 @@
+steps:
+- bash: |
+    if [ $(Stage) == "Dev" ]; then
+      if [ $(Build.SourceBranchName) == "main" ]; then
+        requestor="MainBranchIntegration"
+      else
+        requestor=$(git log -1 --pretty=format:'%an' | sed 's/[^a-zA-Z0-9]//g')
+      fi
+      slot_name="ecpfr-$requestor"
+      cluster_name="ecpfr-dev-$requestor"
+    elif [ $(Stage) == "Staging" ]; then
+      slot_name="ecpfr-uat"
+      cluster_name="ecpfr-uat"
+    elif [ $(Stage) == "Production" ]; then
+      slot_name="ecpfr-prod"
+      cluster_name="ecpfr-prod"  
+    fi 
+    echo "##vso[task.setvariable variable=SlotName;isOutput=true]$slot_name"
+    echo "##vso[task.setvariable variable=ClusterName;isOutput=true]$cluster_name"
+  displayName: Get the pipeline variables
+  name: NameVars
+
+- task: DeleteFiles@1
+  displayName: 'Remove unneeded files'
+  inputs:
+    sourceFolder: $(workingDirectory)
+    contents: '*'
+    removeSourceFolder: true
+
+- task: Docker@2
+  displayName: Login to ACR
+  inputs:
+    command: login
+    containerRegistry: $(ContainerRegistryName)
+
+- script: |
+    docker pull $(ContainerRegistryName).azurecr.io/$(EcpfrBaseImageRepo):builder || true
+    
+    docker build \
+      --target builder \
+      --cache-from $(ContainerRegistryName).azurecr.io/$(EcpfrBaseImageRepo):builder \
+      -t $(ContainerRegistryName).azurecr.io/$(EcpfrBaseImageRepo):builder .
+    
+    docker pull $(ContainerRegistryName).azurecr.io/$(EcpfrBaseImageRepo):latest || true
+    
+    docker build \
+      --cache-from $(ContainerRegistryName).azurecr.io/$(EcpfrBaseImageRepo):builder \
+      --cache-from $(ContainerRegistryName).azurecr.io/$(EcpfrBaseImageRepo):latest \
+      -t $(ContainerRegistryName).azurecr.io/$(EcpfrImageRepo):$(NameVars.SlotName) \
+      --build-arg PIP_URL=$(PIP_URL) .
+    
+    docker push $(ContainerRegistryName).azurecr.io/$(EcpfrImageRepo):$(NameVars.SlotName)
+    
+    if [[ $(Stage) != "Dev" || $(Stage) == "Dev" && $(Build.SourceBranchName) == "main" ]]; then
+      docker rmi $(ContainerRegistryName).azurecr.io/$(EcpfrBaseImageRepo):latest
+      
+      docker image tag \
+        $(ContainerRegistryName).azurecr.io/$(EcpfrImageRepo):$(NameVars.SlotName) \
+        $(ContainerRegistryName).azurecr.io/$(EcpfrBaseImageRepo):latest
+
+      docker push $(ContainerRegistryName).azurecr.io/$(EcpfrBaseImageRepo):latest
+      docker push $(ContainerRegistryName).azurecr.io/$(EcpfrBaseImageRepo):builder
+    fi
+
+    docker rmi $(ContainerRegistryName).azurecr.io/$(EcpfrImageRepo):$(NameVars.SlotName)
+    docker images
+  displayName: Build and push docker image
+
+- task: Docker@2
+  displayName: Logout of ACR
+  inputs:
+    command: logout
+    containerRegistry: $(ContainerRegistryName)

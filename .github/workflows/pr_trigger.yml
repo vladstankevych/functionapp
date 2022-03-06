@@ -1,0 +1,73 @@
+name: Run Azure DevOps pipeline on PR comment command
+
+on:
+  issue_comment:
+    types: [created]
+
+env:
+  AZ_DEVOPS_PROJECT_URL: https://dev.azure.com/stankevychvladyslav/test_project
+  AZ_DEVOPS_PIPELINE_NAME: Test-pipeline
+
+jobs:
+  pr_commented:
+    # This job only runs for pull request comments
+    name: PR comment
+    if: ${{ github.event.issue.pull_request }}
+    runs-on: ubuntu-latest
+    steps:
+    # Do not remove: useful for debug purposes
+    - name: Dump event JSON and environment
+      run: cat "$GITHUB_EVENT_PATH"; env
+
+    # Get info about source branch of PR 
+    # (because by default it's absent in github context when triggered by "issue_comment")
+    - name: Get PR ref and sha
+      id: get_pull_request_ref
+      uses: octokit/request-action@v2.x
+      with:
+        route: GET /repos/:repository/pulls/:issue_id
+        repository: ${{ github.repository }}
+        issue_id: ${{ github.event.issue.number }}
+      env:
+        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+    # Depending on the comment body set corresponding variables
+    - name: Choose an action
+      run: |
+        if [[ ${{ github.event.comment.body }} == "databricks-small" ]]; then
+          echo "cluster_size=small" >> $GITHUB_ENV
+          echo "part=databricks" >> $GITHUB_ENV
+          echo "invoke=true" >> $GITHUB_ENV
+        elif [[ ${{ github.event.comment.body }} == "databricks-medium" ]]; then
+          echo "cluster_size=medium" >> $GITHUB_ENV
+          echo "part=databricks" >> $GITHUB_ENV
+          echo "invoke=true" >> $GITHUB_ENV
+        elif [[ ${{ github.event.comment.body }} == "databricks-large" ]]; then
+          echo "cluster_size=large" >> $GITHUB_ENV
+          echo "part=databricks" >> $GITHUB_ENV
+          echo "invoke=true" >> $GITHUB_ENV
+        else 
+          echo "invoke=false" >> $GITHUB_ENV
+        fi
+    
+    # Install nodejs for script to run Azure Pipeline
+    - uses: actions/setup-node@v2
+      if: env.invoke
+      with:
+        node-version: '14'
+
+    # Run script to invoke pipeline
+    - name: Invoke Azure Pipeline with chosen parameters
+      if: env.invoke
+      run: |
+        npm i @actions/core azure-devops-node-api
+        src_folder="azure_pipelines/config/azure_pipeline_api/src"
+        input_vars="\"part\": \"$part\""
+        if [ "$part" = "databricks" ]; then
+          input_vars="$input_vars, \"cluster_size\": \"$cluster_size\""
+        fi
+        sed -i "s|\[GITHUB_BRANCH_REF\]|refs/heads/${{ fromJson(steps.get_pull_request_ref.outputs.data).head.ref }}|" "$src_folder/pipeline.runner.js"
+        sed -i "s|\[GITHUB_BRANCH_SHA\]|${{ fromJson(steps.get_pull_request_ref.outputs.data).head.sha }}|" "$src_folder/pipeline.runner.js"
+        sed -i "s|\[AZ_DEVOPS_PROJECT_URL\]|$AZ_DEVOPS_PROJECT_URL|" "$src_folder/task.parameters.js"
+        sed -i "s|\[AZ_DEVOPS_PIPELINE_NAME\]|$AZ_DEVOPS_PIPELINE_NAME|" "$src_folder/task.parameters.js"
+        sed -i "s|\[PIPELINE_INPUT_VARIABLES\]|$input_vars|" "$src_folder/task.parameters.js"

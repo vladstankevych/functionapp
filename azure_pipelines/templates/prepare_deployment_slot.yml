@@ -1,0 +1,101 @@
+jobs:
+- job: CheckSlot
+  displayName: Prepare the deployment slot
+  steps:
+  - bash: |
+      if [ $(Stage) == "Dev" ]; then
+        if [ $(Build.SourceBranchName) == "main" ]; then
+          requestor="MainBranchIntegration"
+        else
+          requestor=$(git log -1 --pretty=format:'%an' | sed 's/[^a-zA-Z0-9]//g')
+        fi
+        slot_name="ecpfr-$requestor"
+        cluster_name="ecpfr-dev-$requestor"
+      elif [ $(Stage) == "Staging" ]; then
+        slot_name="ecpfr-uat"
+        cluster_name="ecpfr-uat"
+      elif [ $(Stage) == "Production" ]; then
+        slot_name="ecpfr-prod"
+        cluster_name="ecpfr-prod"  
+      fi 
+      echo "##vso[task.setvariable variable=SlotName;isOutput=true]$slot_name"
+      echo "##vso[task.setvariable variable=ClusterName;isOutput=true]$cluster_name"
+    displayName: Get the pipeline variables
+    name: NameVars
+
+  - task: AzureCLI@2
+    displayName: Check the deployment slot
+    inputs:
+      azureSubscription: $(FunctionAppSubscription)
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        name_result=`az functionapp deployment slot list -n $(FunctionAppName) -g $(FunctionAppRG) --query "[?name == '$(NameVars.SlotName)']|[0].name"`
+        if [ -z $name_result ]; then
+          az functionapp deployment slot create -n $(FunctionAppName) -g $(FunctionAppRG) -s $(NameVars.SlotName)
+          name_result=`az functionapp deployment slot list -n $(FunctionAppName) -g $(FunctionAppRG) --query "[?name == '$(NameVars.SlotName)']|[0].name"`
+          if [ -z $name_result ]; then
+            exit 1
+          fi
+        fi
+        python_runtime_version=`az functionapp config show -n $(FunctionAppName) -g $(FunctionAppRG) -s $(NameVars.SlotName) --query 'linuxFxVersion' -o tsv`
+        if [ $python_runtime_version != "PYTHON|$(PythonVersion)" ]; then
+            az functionapp config set -n $(FunctionAppName) -g $(FunctionAppRG) -s $(NameVars.SlotName) --linux-fx-version "PYTHON|$(PythonVersion)"
+        fi 
+
+  - task: AzureCLI@2
+    displayName: Delete all extra configuration settings
+    condition: succeeded()
+    inputs:
+      azureSubscription: $(FunctionAppSubscription)
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        settings_folder="$(Build.SourcesDirectory)/azure_pipelines/config/azure_functions_config"
+        current_settings=$(az functionapp config appsettings list -n $(FunctionAppName) -g $(FunctionAppRG) -s $(NameVars.SlotName) --query "[].name")
+        current_settings_array=( $(jq -r '.[]' <<< $current_settings) )
+
+        required_settings=( $(jq -r '.[].name' $settings_folder/slot_settings_common.json) )
+        required_settings+=( "APPINSIGHTS_INSTRUMENTATIONKEY" "AzureWebJobsStorage" )
+
+        settings_to_delete=()
+        for value in "${current_settings_array[@]}"; do
+          if [[ ! " ${required_settings[*]} " =~ " ${value} " ]]; then
+              az functionapp config appsettings delete -n $(FunctionAppName) -g $(FunctionAppRG) -s $(NameVars.SlotName) --setting-names $value
+          fi
+        done
+
+  - task: AzureCLI@2
+    displayName: Set the required app settings
+    condition: succeeded()
+    inputs:
+      azureSubscription: $(FunctionAppSubscription)
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        set -o errexit
+        set -o xtrace
+        path_to_settings="$(Build.SourcesDirectory)/azure_pipelines/config/azure_functions_config/slot_settings_common.json"
+        sed -i "s|\[PIP_URL\]|$(PIP_URL)|" $path_to_settings
+        az functionapp config appsettings set -n $(FunctionAppName) -g $(FunctionAppRG) -s $(NameVars.SlotName) --settings "@$path_to_settings"
+
+  - task: AzureCLI@2
+    displayName: Disable all timer triggered functions
+    condition: and(succeeded(), and(eq(variables.Stage, 'Dev'), ne(variables['NameVars.SlotName'], 'ecpfr-MainBranchIntegration')))
+    inputs:
+      azureSubscription: $(FunctionAppSubscription)
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        set -o errexit
+        set -o xtrace
+        cd $(workingDirectory)
+        for d in $(ls -d */); do
+          if [ -f "$d/function.json" ]; then
+              func_type=`jq '.bindings[] | select(.type=="timerTrigger") | .type' $d/function.json`
+              if [ ! -z $func_type ]; then
+                      rule_name="AzureWebJobs".${d%%/}."Disabled"
+                      az functionapp config appsettings set -n $(FunctionAppName) -g $(FunctionAppRG) -s $(NameVars.SlotName) --settings "$rule_name=true"
+              fi
+          fi
+        done

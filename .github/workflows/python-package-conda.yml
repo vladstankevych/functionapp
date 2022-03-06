@@ -42,20 +42,12 @@ jobs:
         # echo "${{ github.event.comment.body }}"
         # echo "${{ github.ref }}"
         # git branch
-        cat $GITHUB_ENV
-        ls -al /home/runneradmin
-        cat /home/runner/.bash_profile
-        cat /home/runner/.bashrc
-        cat /home/runner/.profile
-        ls -al /home/runner/work/_PipelineMapping
-        ls -al /home/runner/work/_temp/_github_workflow
-        cat /home/runner/work/_temp/*.sh
         
     - name: Echo updated variables
       run: |
         echo "---------"
-        echo $GITHUB_REF
-        echo $GITHUB_SHA
+        echo $lola
+        echo "---------"
         env
 
 #    - name: Checkout Pull Request

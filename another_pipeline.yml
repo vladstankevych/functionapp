@@ -24,5 +24,4 @@ stages:
           if [ "$(check_if_works)" = "IT WORKS" ]; then
             echo "HOORAY"
           fi
-        fi
-
+      fi

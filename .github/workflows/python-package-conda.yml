@@ -51,6 +51,8 @@ jobs:
           input_vars="\"cluster_size\": \"$size\""
         fi
         echo $input_vars
+        input_vars="$input_vars, \"cluster_size\": \"$size\""
+        echo $input_vars
         echo "---------"
         env
 

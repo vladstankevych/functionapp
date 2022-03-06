@@ -29,7 +29,8 @@ jobs:
     - name: Echo PR comment
       run: |
         echo "---------"
-        echo "lola=lolita" >> $GITHUB_ENV
+        echo "part=databricks" >> $GITHUB_ENV
+        echo "size=small" >> $GITHUB_ENV
         echo $lola
         # echo $GITHUB_REF
         # echo $GITHUB_SHA
@@ -46,7 +47,10 @@ jobs:
     - name: Echo updated variables
       run: |
         echo "---------"
-        cat $GITHUB_ENV
+        if [ "$part" = "databricks" ]; then
+          input_vars='"cluster_size": "$size"'
+        fi
+        echo $input_vars
         echo "---------"
         env
 

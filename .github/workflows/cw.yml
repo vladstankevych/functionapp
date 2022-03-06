@@ -57,7 +57,7 @@ jobs:
           echo '::warning::Using PG_DNA_GITHUB_TOKEN for git operations on github.com/procter-gamble'
 
       # Do not remove: fetches your code in the current dir. Full clone (0 depth), not shallow (makes SQ happy)
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0

@@ -16,7 +16,7 @@ stages:
     - bash: |
         echo "Here we go"
         echo $(output)
-        if [ ! -z ${check_if_works+x} ]; then
+      if [ ! -z "$(check_if_works)" ]; then
           echo "$(check_if_works)"
           echo "ssssss"
           echo "$check_if_works 1"

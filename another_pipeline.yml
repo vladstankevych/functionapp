@@ -17,5 +17,3 @@ stages:
         echo "Here we go"
         echo $(output)
         echo $(check_if_works)
-        echo $[variables.check_if_works]
-

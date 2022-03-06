@@ -25,28 +25,19 @@ jobs:
       with:
         ref: ${{ fromJson(steps.get_pull_request_ref.outputs.data).head.ref }}
         fetch-depth: 0
-
+        
     - name: Echo PR comment
       run: |
-        echo "---------"
-        export GITHUB_REF="refs/heads/${{ fromJson(steps.get_pull_request_ref.outputs.data).head.ref }}"
-        export GITHUB_SHA=${{ fromJson(steps.get_pull_request_ref.outputs.data).head.sha }}
         echo $GITHUB_REF
         echo $GITHUB_SHA
-        echo "---------"
-        echo ${{ fromJson(steps.get_pull_request_ref.outputs.data).head.ref }}
-        echo ${{ fromJson(steps.get_pull_request_ref.outputs.data).head.sha }}
-        echo "---------"
         echo "${{ github.event.comment.body }}"
         echo "${{ github.ref }}"
+        echo "${{ github.event.issue.pull_request }}"
+        echo "${{ github.event.issue.pull_request.head.sha }}"
         git branch
         cat Dockerfile
-        
-    - name: Echo updated variables
-      run: |
-        echo "---------"
-        echo $GITHUB_REF
-        echo $GITHUB_SHA
+      env:
+        First_Name: Mona
 
     - name: Azure Pipelines Action
       uses: Azure/pipelines@v1.2

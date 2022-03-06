@@ -4,7 +4,6 @@ pr: none
 
 variables:
   output: "NO_OUTPUT"
-  check_if_works: "NOT changed"
   
 stages:
 - stage: First
@@ -18,5 +17,4 @@ stages:
         echo "Here we go"
         echo $(output)
         echo $(check_if_works)
-        echo $[variables.check_if_works]
 

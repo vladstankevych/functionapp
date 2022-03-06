@@ -48,7 +48,7 @@ jobs:
       run: |
         echo "---------"
         if [ "$part" = "databricks" ]; then
-          input_vars='"cluster_size": "${size}"'
+          input_vars="\"cluster_size\": \"$size\""
         fi
         echo $input_vars
         echo "---------"
@@ -65,13 +65,13 @@ jobs:
 #        echo "${{ github.ref }}"
 #        echo "${{ github.base_ref }}"
 
-    - name: Azure Pipelines Action
-      uses: Azure/pipelines@v1.2
-      with:
-        azure-devops-project-url: https://dev.azure.com/stankevychvladyslav/test_project
-        azure-pipeline-name: 'Test_pipeline'
-        azure-devops-token: ${{ secrets.AZURE_DEVOPS_TOKEN }}
-        azure-pipeline-variables:  '{"check_if_works": "IT WORKS"}'
+#    - name: Azure Pipelines Action
+#      uses: Azure/pipelines@v1.2
+#      with:
+#        azure-devops-project-url: https://dev.azure.com/stankevychvladyslav/test_project
+#        azure-pipeline-name: 'Test_pipeline'
+#        azure-devops-token: ${{ secrets.AZURE_DEVOPS_TOKEN }}
+#        azure-pipeline-variables:  '{"check_if_works": "IT WORKS"}'
         
 #    - name: Set up Python 3.10
 #      uses: actions/setup-python@v2

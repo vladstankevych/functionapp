@@ -4,6 +4,7 @@ pr: none
 
 variables:
   output: "NO_OUTPUT"
+  check_if_works: "NOT changed"
   
 stages:
 - stage: First

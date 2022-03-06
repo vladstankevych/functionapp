@@ -46,7 +46,7 @@ jobs:
     - name: Echo updated variables
       run: |
         echo "---------"
-        echo $lola
+        cat $GITHUB_ENV
         echo "---------"
         env
 

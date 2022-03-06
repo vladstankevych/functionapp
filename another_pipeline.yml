@@ -18,6 +18,9 @@ stages:
         echo $(output)
         if [ ! -z ${check_if_works+x} ]; then
           echo "$(check_if_works)"
+          echo "ssssss"
+          echo "$check_if_works 1"
+          echo "${check_if_works} 2"
           if [ "$(check_if_works)" = "IT WORKS" ]; then
             echo "HOORAY"
           fi

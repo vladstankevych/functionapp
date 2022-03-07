@@ -18,3 +18,6 @@ stages:
         echo $(part)
         echo $(cluster_size)
         echo "a"
+        if [ ! -z "$(cluster_size)" ]; then
+          echo "($cluster_size)"
+        fi

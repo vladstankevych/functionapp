@@ -17,3 +17,4 @@ stages:
         echo "Here we go"
         echo $(part)
         echo $(cluster_size)
+        echo "a"

@@ -10,8 +10,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(require("@actions/core"));
 class TaskParameters {
     constructor() {
-        this._azureDevopsProjectUrl = [AZ_DEVOPS_PROJECT_URL];
-        this._azurePipelineName = [AZ_DEVOPS_PIPELINE_NAME];
+        this._azureDevopsProjectUrl = "[AZ_DEVOPS_PROJECT_URL]";
+        this._azurePipelineName = "[AZ_DEVOPS_PIPELINE_NAME]";
         this._azureDevopsToken = 'cehnsjgrsplbpx3geci6gpame35r5fm2d55r25hv3q6vyybl6l3q'; // '${{ secrets.AZURE_DEVOPS_TOKEN }}';
         this._azurePipelineVariables = '{[PIPELINE_INPUT_VARIABLES]}';
     }

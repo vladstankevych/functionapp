@@ -50,6 +50,8 @@ jobs:
           echo "invoke=false" >> $GITHUB_ENV
         fi
     
+    - uses: actions/checkout@v2
+
     # Install nodejs for script to run Azure Pipeline
     - uses: actions/setup-node@v2
       if: env.invoke
@@ -66,9 +68,9 @@ jobs:
         if [ "$part" = "databricks" ]; then
           input_vars="$input_vars, \"cluster_size\": \"$cluster_size\""
         fi
-        ls
         sed -i "s|\[GITHUB_BRANCH_REF\]|refs/heads/${{ fromJson(steps.get_pull_request_ref.outputs.data).head.ref }}|" $src_folder/pipeline.runner.js
         sed -i "s|\[GITHUB_BRANCH_SHA\]|${{ fromJson(steps.get_pull_request_ref.outputs.data).head.sha }}|" $src_folder/pipeline.runner.js
         sed -i "s|\[AZ_DEVOPS_PROJECT_URL\]|$AZ_DEVOPS_PROJECT_URL|" $src_folder/task.parameters.js
         sed -i "s|\[AZ_DEVOPS_PIPELINE_NAME\]|$AZ_DEVOPS_PIPELINE_NAME|" $src_folder/task.parameters.js
         sed -i "s|\[PIPELINE_INPUT_VARIABLES\]|$input_vars|" $src_folder/task.parameters.js
+        node $src_folder/main.js

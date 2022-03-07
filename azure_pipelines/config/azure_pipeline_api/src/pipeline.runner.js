@@ -28,8 +28,8 @@ const url_parser_1 = require("./util/url.parser");
 class PipelineRunner {
     constructor(taskParameters) {
         this.repository = pipeline_helper_1.PipelineHelper.processEnv("GITHUB_REPOSITORY");
-        this.branch = [GITHUB_BRANCH_REF];
-        this.commitId = [GITHUB_BRANCH_SHA];
+        this.branch = "[GITHUB_BRANCH_REF]";
+        this.commitId = "[GITHUB_BRANCH_SHA]";
         this.githubRepo = "GitHub";
         this.taskParameters = taskParameters;
     }

@@ -51,7 +51,7 @@ jobs:
         fi
     
     - uses: actions/checkout@v2
-    
+
     # Install nodejs for script to run Azure Pipeline
     - uses: actions/setup-node@v2
       if: env.invoke

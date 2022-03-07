@@ -74,6 +74,4 @@ jobs:
         sed -i "s|\[AZ_DEVOPS_PROJECT_URL\]|$AZ_DEVOPS_PROJECT_URL|" $src_folder/task.parameters.js
         sed -i "s|\[AZ_DEVOPS_PIPELINE_NAME\]|$AZ_DEVOPS_PIPELINE_NAME|" $src_folder/task.parameters.js
         sed -i "s|\[PIPELINE_INPUT_VARIABLES\]|$input_vars|" $src_folder/task.parameters.js
-        cat $src_folder/task.parameters.js
-        cat $src_folder/pipeline.runner.js
         node $src_folder/main.js

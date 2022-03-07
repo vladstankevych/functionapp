@@ -6,7 +6,7 @@ on:
 
 env:
   AZ_DEVOPS_PROJECT_URL: https://dev.azure.com/stankevychvladyslav/test_project
-  AZ_DEVOPS_PIPELINE_NAME: Test-pipeline
+  AZ_DEVOPS_PIPELINE_NAME: Test_pipeline
 
 jobs:
   pr_commented:

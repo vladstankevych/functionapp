@@ -27,7 +27,7 @@ const logger_1 = require("./util/logger");
 const url_parser_1 = require("./util/url.parser");
 class PipelineRunner {
     constructor(taskParameters) {
-        this.repository = "vladyslav/functionapp";
+        this.repository = "[GITHUB_REPOSITORY]";
         this.branch = "[GITHUB_BRANCH_REF]";
         this.commitId = "[GITHUB_BRANCH_SHA]";
         this.githubRepo = "GitHub";
@@ -189,3 +189,4 @@ class PipelineRunner {
     }
 }
 exports.PipelineRunner = PipelineRunner;
+

@@ -6,6 +6,7 @@ variables:
   output: "NO_OUTPUT"
   vmImageName: 'ubuntu-latest'
   vmImageName1: 'windows-2022'
+  isMain: $[eq(variables['ms_hosted_agent'], 'true')]
 
 stages:
 - stage: First
@@ -38,5 +39,6 @@ stages:
     - bash: |
         echo "Azure functions part"
         echo "a"
+        echo $(isMain)
         echo $(ms_hosted_agent)
         echo "$(ms_hosted_agent)"

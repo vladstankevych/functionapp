@@ -30,9 +30,9 @@ stages:
     displayName: Build the Docker image
     timeoutInMinutes: 0
     pool:
-      ${{ if ne(variables.ms_hosted_agent, 'true') }}:
+      ${{ if ne(variables['ms_hosted_agent'], 'true') }}:
         vmImage: ${{ variables.vmImageName1 }}
-      ${{ if eq(variables.ms_hosted_agent, 'true') }}:
+      ${{ if eq(variables['ms_hosted_agent'], 'true') }}:
         vmImage: ${{ variables.vmImageName }}
     steps:
     - bash: |

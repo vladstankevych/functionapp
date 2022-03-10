@@ -7,6 +7,9 @@ variables:
   vmImageName: 'ubuntu-latest'
   vmImageName1: 'windows-2022'
 
+pool:
+  vmImage: 'ubuntu-latest'
+
 stages:
 - stage: First
   condition: ne(variables.part, 'databricks')
@@ -23,11 +26,12 @@ stages:
 
 - stage: Build_docker
   condition: ne(variables.part, 'azure_functions')
-  pool:
-    ${{ if not(contains(variables['ms_hosted_agent'], 'ubuntu')) }}:
+  #${{ if not(contains(variables['ms_hosted_agent'], 'ubuntu')) }}:
+  #  pool:    
+  #    vmImage: ${{ variables.vmImageName1 }}
+  ${{ if contains(variables['ms_hosted_agent'], 'ubuntu') }}:
+    pool:
       vmImage: ${{ variables.vmImageName1 }}
-    ${{ if contains(variables['ms_hosted_agent'], 'ubuntu') }}:
-      vmImage: ${{ variables.vmImageName }}
   displayName: Build the Docker image
   dependsOn: []
   jobs:

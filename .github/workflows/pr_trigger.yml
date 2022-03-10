@@ -76,7 +76,7 @@ jobs:
         input_vars="\"part\": \"$part\""
         if [ "$part" = "databricks" ]; then
           input_vars="$input_vars, \"cluster_size\": \"$cluster_size\""
-          if [ "$ms_hosted_agent" = "true"]; then
+          if [ "$ms_hosted_agent" = true ]; then
             input_vars="$input_vars, \"ms_hosted_agent\": \"true\""
           fi
         fi

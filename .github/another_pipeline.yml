@@ -7,14 +7,32 @@ variables:
   
 stages:
 - stage: First
+  condition: ne(variables.part, 'databricks')
   displayName: Stage
+  dependsOn: []
   jobs:
   - job: First_job
     pool:
       vmImage: ubuntu-latest
     steps:
     - bash: |
-        echo "Here we go"
-        echo $(part)
-        echo $(cluster_size)
+        echo "Databricks part"
+        echo "a"
+
+- stage: Build_docker
+  condition: ne(variables.part, 'azure_functions')
+  displayName: Build the Docker image
+  dependsOn: []
+  jobs:
+  - job: build_docker_image
+    displayName: Build the Docker image
+    timeoutInMinutes: 0
+    pool:
+      ${{ if ne(variables.ms_hosted_agent, 'true') }}:
+        name: ${{ variables.AgentsPoolName }}
+      ${{ if eq(variables.ms_hosted_agent, 'true') }}:
+        vmImage: ${{ variables.vmImageName }}
+    steps:
+    - bash: |
+        echo "Azure functions part"
         echo "a"

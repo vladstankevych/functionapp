@@ -46,6 +46,14 @@ jobs:
           echo "cluster_size=large" >> $GITHUB_ENV
           echo "part=databricks" >> $GITHUB_ENV
           echo "invoke=true" >> $GITHUB_ENV
+        elif [[ ${{ github.event.comment.body }} == "databricks-req ]]; then
+          echo "cluster_size=medium" >> $GITHUB_ENV
+          echo "part=databricks" >> $GITHUB_ENV
+          echo "ms_hosted_agent=true" >> $GITHUB_ENV
+          echo "invoke=true" >> $GITHUB_ENV
+        elif [[ ${{ github.event.comment.body }} == "azure functions" ]]; then
+          echo "part=azure_functions" >> $GITHUB_ENV
+          echo "invoke=true" >> $GITHUB_ENV
         else 
           echo "invoke=false" >> $GITHUB_ENV
         fi

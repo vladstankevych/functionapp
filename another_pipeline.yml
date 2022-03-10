@@ -31,9 +31,9 @@ stages:
     displayName: Build the Docker image
     timeoutInMinutes: 0
     pool:
-      ${{ if ne(variables['isMain'], 'True') }}:
+      ${{ if ne(variables['isMain'], true) }}:
         vmImage: ${{ variables.vmImageName1 }}
-      ${{ if eq(variables['isMain'], 'True') }}:
+      ${{ if eq(variables['isMain'], true) }}:
         vmImage: ${{ variables.vmImageName }}
     steps:
     - bash: |

@@ -30,7 +30,7 @@ stages:
     timeoutInMinutes: 0
     pool:
       ${{ if ne(variables.ms_hosted_agent, 'true') }}:
-        name: ${{ variables.AgentsPoolName }}
+        name: $(AgentsPoolName) # ${{ variables.AgentsPoolName }}
       ${{ if eq(variables.ms_hosted_agent, 'true') }}:
         vmImage: ${{ variables.vmImageName }}
     steps:

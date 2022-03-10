@@ -40,7 +40,7 @@ stages:
         echo $(ms_hosted_agent)
         echo "$(ms_hosted_agent)"
 
-  - job: build_docker_image
+  - job: build_docker_image_hosted
     displayName: Build the Docker image
     timeoutInMinutes: 0
     pool:

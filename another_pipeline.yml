@@ -21,7 +21,7 @@ stages:
         echo "a"
         if [ ! -z "$(cluster_size)" ]; then
           echo "$(cluster_size)"
-        fi
+        fi 
       condition: eq(variables.part, 'databricks')
 
     - bash: |

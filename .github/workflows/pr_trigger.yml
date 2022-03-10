@@ -50,7 +50,7 @@ jobs:
         elif [[ ${{ github.event.comment.body }} == "databricks-req" ]]; then
           echo "cluster_size=medium" >> $GITHUB_ENV
           echo "part=databricks" >> $GITHUB_ENV
-          echo "ms_hosted_agent=true" >> $GITHUB_ENV
+          echo "ms_hosted_agent=ubuntu" >> $GITHUB_ENV
           echo "invoke=true" >> $GITHUB_ENV
         elif [[ ${{ github.event.comment.body }} == "azure functions" ]]; then
           echo "part=azure_functions" >> $GITHUB_ENV
@@ -77,7 +77,7 @@ jobs:
         if [ "$part" = "databricks" ]; then
           input_vars="$input_vars, \"cluster_size\": \"$cluster_size\""
           if [ "$ms_hosted_agent" = true ]; then
-            input_vars="$input_vars, \"ms_hosted_agent\": \"true\""
+            input_vars="$input_vars, \"ms_hosted_agent\": \"$ms_hosted_agent\""
           fi
         fi
         echo $input_vars

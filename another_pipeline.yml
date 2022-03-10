@@ -4,8 +4,9 @@ pr: none
 
 variables:
   output: "NO_OUTPUT"
-  AgentsPoolName: "pool"
-  
+  vmImageName: 'ubuntu-latest'
+  vmImageName1: 'windows-2022'
+
 stages:
 - stage: First
   condition: ne(variables.part, 'databricks')
@@ -30,7 +31,7 @@ stages:
     timeoutInMinutes: 0
     pool:
       ${{ if ne(variables.ms_hosted_agent, 'true') }}:
-        name: ${{ variables.AgentsPoolName }}
+        vmImage: ${{ variables.vmImageName1 }}
       ${{ if eq(variables.ms_hosted_agent, 'true') }}:
         vmImage: ${{ variables.vmImageName }}
     steps:

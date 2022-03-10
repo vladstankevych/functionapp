@@ -1,1 +1,1 @@
-aaaqq
+"spark.driver.memory": "12g",

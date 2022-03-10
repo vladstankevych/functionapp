@@ -35,6 +35,7 @@ jobs:
     - name: Choose an action
       run: |
         if [[ ${{ github.event.comment.body }} == "databricks-small" ]]; then
+          echo "works"
           echo "cluster_size=small" >> $GITHUB_ENV
           echo "part=databricks" >> $GITHUB_ENV
           echo "invoke=true" >> $GITHUB_ENV
@@ -75,6 +76,8 @@ jobs:
         input_vars="\"part\": \"$part\""
         if [ "$part" = "databricks" ]; then
           input_vars="$input_vars, \"cluster_size\": \"$cluster_size\""
+          if [ "$ms_hosted_agent" = "true"]; then
+            input_vars="$input_vars, \"ms_hosted_agent\": \"true\""
         fi
         sed -i "s|\[GITHUB_REPOSITORY\]|$GITHUB_REPOSITORY|" $src_folder/pipeline.runner.js
         sed -i "s|\[GITHUB_BRANCH_REF\]|refs/heads/${{ fromJson(steps.get_pull_request_ref.outputs.data).head.ref }}|" $src_folder/pipeline.runner.js

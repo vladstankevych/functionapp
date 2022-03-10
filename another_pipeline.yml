@@ -23,21 +23,20 @@ stages:
 
 - stage: Build_docker
   condition: ne(variables.part, 'azure_functions')
+  pool:
+    ${{ if ne(variables['ms_hosted_agent'], 'ubuntu') }}:
+      vmImage: ${{ variables.vmImageName1 }}
+    ${{ if eq(variables['ms_hosted_agent'], 'ubuntu') }}:
+      vmImage: ${{ variables.vmImageName }}
   displayName: Build the Docker image
   dependsOn: []
   jobs:
   - job: build_docker_image
     displayName: Build the Docker image
     timeoutInMinutes: 0
-    pool:
-      ${{ if ne(variables['ms_hosted_agent'], 'ubuntu') }}:
-        vmImage: ${{ variables.vmImageName1 }}
-      ${{ if eq(variables['ms_hosted_agent'], 'ubuntu') }}:
-        vmImage: ${{ variables.vmImageName }}
     steps:
     - bash: |
         echo "Azure functions part"
         echo "a"
-        echo $(isMain)
         echo $(ms_hosted_agent)
         echo "$(ms_hosted_agent)"

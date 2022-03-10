@@ -38,3 +38,5 @@ stages:
     - bash: |
         echo "Azure functions part"
         echo "a"
+        echo $ms_hosted_agent
+        echo "$ms_hosted_agent"

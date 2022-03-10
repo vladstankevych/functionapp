@@ -6,7 +6,6 @@ variables:
   output: "NO_OUTPUT"
   vmImageName: 'ubuntu-latest'
   vmImageName1: 'windows-2022'
-  isMain: $[eq(variables['ms_hosted_agent'], 'true')]
 
 stages:
 - stage: First
@@ -31,9 +30,9 @@ stages:
     displayName: Build the Docker image
     timeoutInMinutes: 0
     pool:
-      ${{ if ne(variables['isMain'], true) }}:
+      ${{ if ne(variables['ms_hosted_agent'], 'ubuntu') }}:
         vmImage: ${{ variables.vmImageName1 }}
-      ${{ if eq(variables['isMain'], true) }}:
+      ${{ if eq(variables['ms_hosted_agent'], 'ubuntu') }}:
         vmImage: ${{ variables.vmImageName }}
     steps:
     - bash: |

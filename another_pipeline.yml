@@ -24,9 +24,9 @@ stages:
 - stage: Build_docker
   condition: ne(variables.part, 'azure_functions')
   pool:
-    ${{ if ne(variables['ms_hosted_agent'], 'ubuntu') }}:
+    ${{ if ne(variables.ms_hosted_agent, 'ubuntu') }}:
       vmImage: ${{ variables.vmImageName1 }}
-    ${{ if eq(variables['ms_hosted_agent'], 'ubuntu') }}:
+    ${{ if eq(variables.ms_hosted_agent, 'ubuntu') }}:
       vmImage: ${{ variables.vmImageName }}
   displayName: Build the Docker image
   dependsOn: []

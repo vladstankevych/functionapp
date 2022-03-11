@@ -34,12 +34,12 @@ jobs:
     # Depending on the comment body set corresponding variables
     - name: Choose an action
       run: |
-        if [[ ${{ github.event.comment.body }} == "databricks-small" ]]; then
+        if [[ "${{ github.event.comment.body }}" == "databricks small" ]]; then
           echo "works"
           echo "cluster_size=small" >> $GITHUB_ENV
           echo "part=databricks" >> $GITHUB_ENV
           echo "invoke=true" >> $GITHUB_ENV
-        elif [[ ${{ github.event.comment.body }} == "databricks-medium" ]]; then
+        elif [[ "${{ github.event.comment.body }}" == "databricks medium" ]]; then
           echo "cluster_size=medium" >> $GITHUB_ENV
           echo "part=databricks" >> $GITHUB_ENV
           echo "invoke=true" >> $GITHUB_ENV

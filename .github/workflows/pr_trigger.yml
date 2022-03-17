@@ -63,13 +63,13 @@ jobs:
 
     # Install nodejs for script to run Azure Pipeline
     - uses: actions/setup-node@v2
-      if: env.invoke
+      if: env.invoke == 'true'
       with:
         node-version: '14'
 
     # Run script to invoke pipeline
     - name: Invoke Azure Pipeline with chosen parameters
-      if: env.invoke
+      if: env.invoke == 'true'
       run: |
         npm i @actions/core azure-devops-node-api
         src_folder="azure_pipelines/config/azure_pipeline_api/src"

@@ -80,6 +80,7 @@ jobs:
             input_vars="$input_vars, \"ms_hosted_agent\": \"$ms_hosted_agent\""
           fi
         fi
+        input_vars="$input_vars, \"source_branch\": \"${{ fromJson(steps.get_pull_request_ref.outputs.data).head.ref }}\""
         echo $input_vars
         echo ${{ fromJson(steps.get_pull_request_ref.outputs.data).head.ref }}
         sed -i "s|\[GITHUB_REPOSITORY\]|$GITHUB_REPOSITORY|" $src_folder/pipeline.runner.js

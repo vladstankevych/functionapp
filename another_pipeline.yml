@@ -1,10 +1,21 @@
-trigger: none
+trigger:
+  branches:
+    include:
+      - main
 
-pr: none
+pr:
+  branches:
+    include:
+      - main
 
 variables:
   output: "NO_OUTPUT"
-  
+  vmImageName: 'ubuntu-latest'
+  vmImageName1: 'windows-2022'
+
+pool:
+  vmImage: 'ubuntu-latest'
+
 stages:
 - stage: First
   # condition: ne(variables.part, 'databricks')
@@ -18,22 +29,31 @@ stages:
     - bash: |
         echo "Databricks part"
         echo "a"
+        echo $(source_branch)
         echo $(Build.SourceBranch)
         echo $(Build.SourceBranchName)
+        echo $(Build.Reason)
+        echo $(System.PullRequest.SourceBranch) 
+        echo $(System.PullRequest.TargetBranch)
 
 - stage: Build_docker
-  condition: ne(variables.part, 'azure_functions')
+  # condition: ne(variables.part, 'azure_functions')
   displayName: Build the Docker image
   dependsOn: []
   jobs:
   - job: build_docker_image
     displayName: Build the Docker image
     timeoutInMinutes: 0
+    condition: ne(variables.ms_hosted_agent, 'ubuntu')
+    steps:
+    - bash: echo "a"
+
+  - job: build_docker_image_hosted
+    displayName: Build the Docker image
+    timeoutInMinutes: 0
     pool:
-      ${{ if ne(variables.ms_hosted_agent, 'true') }}:
-        name: ${{ variables.AgentsPoolName }}
-      ${{ if eq(variables.ms_hosted_agent, 'true') }}:
-        vmImage: ${{ variables.vmImageName }}
+      vmImage: ${{ variables.vmImageName1 }}
+    condition: eq(variables.ms_hosted_agent, 'ubuntu')
     steps:
     - bash: |
         echo "Azure functions part"

@@ -34,25 +34,25 @@ jobs:
     # Depending on the comment body set corresponding variables
     - name: Choose an action
       run: |
-        if [[ ${{ github.event.comment.body }} == "databricks-small" ]]; then
+        if [[ "${{ github.event.comment.body }}" == "databricks small" ]]; then
           echo "works"
           echo "cluster_size=small" >> $GITHUB_ENV
           echo "part=databricks" >> $GITHUB_ENV
           echo "invoke=true" >> $GITHUB_ENV
-        elif [[ ${{ github.event.comment.body }} == "databricks-medium" ]]; then
+        elif [[ "${{ github.event.comment.body }}" == "databricks medium" ]]; then
           echo "cluster_size=medium" >> $GITHUB_ENV
           echo "part=databricks" >> $GITHUB_ENV
           echo "invoke=true" >> $GITHUB_ENV
-        elif [[ ${{ github.event.comment.body }} == "databricks-large" ]]; then
+        elif [[ "${{ github.event.comment.body }}" == "databricks large" ]]; then
           echo "cluster_size=large" >> $GITHUB_ENV
           echo "part=databricks" >> $GITHUB_ENV
           echo "invoke=true" >> $GITHUB_ENV
-        elif [[ ${{ github.event.comment.body }} == "databricks-req" ]]; then
+        elif [[ "${{ github.event.comment.body }}" == "databricks req-upd" ]]; then
           echo "cluster_size=medium" >> $GITHUB_ENV
           echo "part=databricks" >> $GITHUB_ENV
-          echo "ms_hosted_agent=true" >> $GITHUB_ENV
+          echo "ms_hosted_agent=ubuntu" >> $GITHUB_ENV
           echo "invoke=true" >> $GITHUB_ENV
-        elif [[ ${{ github.event.comment.body }} == "azure functions" ]]; then
+        elif [[ "${{ github.event.comment.body }}" == "azure functions" ]]; then
           echo "part=azure_functions" >> $GITHUB_ENV
           echo "invoke=true" >> $GITHUB_ENV
         else 
@@ -63,25 +63,28 @@ jobs:
 
     # Install nodejs for script to run Azure Pipeline
     - uses: actions/setup-node@v2
-      if: env.invoke
+      if: env.invoke == 'true'
       with:
         node-version: '14'
 
     # Run script to invoke pipeline
     - name: Invoke Azure Pipeline with chosen parameters
-      if: env.invoke
+      if: env.invoke == 'true'
       run: |
         npm i @actions/core azure-devops-node-api
         src_folder="azure_pipelines/config/azure_pipeline_api/src"
         input_vars="\"part\": \"$part\""
         if [ "$part" = "databricks" ]; then
           input_vars="$input_vars, \"cluster_size\": \"$cluster_size\""
-          if [ "$ms_hosted_agent" = "true"]; then
-            input_vars="$input_vars, \"ms_hosted_agent\": \"true\""
+          if [ "$ms_hosted_agent" = "ubuntu" ]; then
+            input_vars="$input_vars, \"ms_hosted_agent\": \"$ms_hosted_agent\""
           fi
         fi
+        echo $input_vars
+        echo ${{ steps.get_pull_request_ref.outputs.data }}
         sed -i "s|\[GITHUB_REPOSITORY\]|$GITHUB_REPOSITORY|" $src_folder/pipeline.runner.js
-        sed -i "s|\[GITHUB_BRANCH_REF\]|refs/heads/${{ fromJson(steps.get_pull_request_ref.outputs.data).head.ref }}|" $src_folder/pipeline.runner.js
+        # sed -i "s|\[GITHUB_BRANCH_REF\]|refs/heads/${{ fromJson(steps.get_pull_request_ref.outputs.data).head.ref }}|" $src_folder/pipeline.runner.js
+        sed -i "s|\[GITHUB_BRANCH_REF\]|refs/pull/23/merge|" $src_folder/pipeline.runner.js
         sed -i "s|\[GITHUB_BRANCH_SHA\]|${{ fromJson(steps.get_pull_request_ref.outputs.data).head.sha }}|" $src_folder/pipeline.runner.js
         sed -i "s|\[AZ_DEVOPS_PROJECT_URL\]|$AZ_DEVOPS_PROJECT_URL|" $src_folder/task.parameters.js
         sed -i "s|\[AZ_DEVOPS_PIPELINE_NAME\]|$AZ_DEVOPS_PIPELINE_NAME|" $src_folder/task.parameters.js

@@ -7,7 +7,7 @@ variables:
   
 stages:
 - stage: First
-  condition: ne(variables.part, 'databricks')
+  # condition: ne(variables.part, 'databricks')
   displayName: Stage
   dependsOn: []
   jobs:
@@ -18,6 +18,8 @@ stages:
     - bash: |
         echo "Databricks part"
         echo "a"
+        echo $(Build.SourceBranch)
+        echo $(Build.SourceBranchName)
 
 - stage: Build_docker
   condition: ne(variables.part, 'azure_functions')

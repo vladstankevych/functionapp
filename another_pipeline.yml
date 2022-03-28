@@ -1,6 +1,12 @@
-trigger: none
+trigger:
+  branches:
+    include:
+      - main
 
-pr: none
+pr:
+  branches:
+    include:
+      - main
 
 variables:
   output: "NO_OUTPUT"

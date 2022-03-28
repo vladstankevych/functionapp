@@ -81,7 +81,7 @@ jobs:
           fi
         fi
         echo $input_vars
-        echo ${{ steps.get_pull_request_ref.outputs.data }}
+        echo "${{ fromJson(steps.get_pull_request_ref.outputs.data) }}"
         sed -i "s|\[GITHUB_REPOSITORY\]|$GITHUB_REPOSITORY|" $src_folder/pipeline.runner.js
         # sed -i "s|\[GITHUB_BRANCH_REF\]|refs/heads/${{ fromJson(steps.get_pull_request_ref.outputs.data).head.ref }}|" $src_folder/pipeline.runner.js
         sed -i "s|\[GITHUB_BRANCH_REF\]|refs/pull/23/merge|" $src_folder/pipeline.runner.js

@@ -29,7 +29,7 @@ stages:
     - bash: |
         echo "Databricks part"
         echo "a"
-        if [ ! -z $(source_branch) ]; then
+        if [ ! -z "$(source_branch)" ]; then
           BranchName="$(source_branch)"
         else
           BranchName=$(System.PullRequest.SourceBranch)

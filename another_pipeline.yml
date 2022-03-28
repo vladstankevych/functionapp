@@ -33,6 +33,7 @@ stages:
           BranchName="$(source_branch)"
         else
           BranchName=$(System.PullRequest.SourceBranch)
+        fi
         echo $(BranchName)
         echo $(Build.SourceBranch)
         echo $(Build.SourceBranchName)

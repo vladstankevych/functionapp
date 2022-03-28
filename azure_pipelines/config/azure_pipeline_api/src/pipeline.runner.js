@@ -100,7 +100,7 @@ class PipelineRunner {
                 },
                 sourceBranch: sourceBranch,
                 sourceVersion: sourceVersion,
-                reason: BuildInterfaces.BuildReason.Manual,
+                reason: BuildInterfaces.BuildReason.PullRequest,
                 parameters: this.taskParameters.azurePipelineVariables
             };
             logger_1.Logger.LogPipelineTriggerInput(build);

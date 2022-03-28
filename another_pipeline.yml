@@ -29,6 +29,7 @@ stages:
     - bash: |
         echo "Databricks part"
         echo "a"
+        echo $(source_branch)
         echo $(Build.SourceBranch)
         echo $(Build.SourceBranchName)
         echo $(Build.Reason)

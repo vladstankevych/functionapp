@@ -31,14 +31,15 @@ stages:
       inputs:
         targetType: inline
         script: |
+          echo $(source_branch)
           echo "Databricks part"
           echo "a"
           if [ ! -z "$(source_branch)" ]; then
-            BranchName=`echo $(source_branch)`
+            branchName=`echo $(source_branch)`
           else
-            BranchName=`echo $(System.PullRequest.SourceBranch)`
+            branchName=`echo $(System.PullRequest.SourceBranch)`
           fi
-          echo $(BranchName)
+          echo $branchName
           echo $(Build.SourceBranch)
           echo $(Build.SourceBranchName)
           echo $(Build.Reason)

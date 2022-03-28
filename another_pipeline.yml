@@ -30,9 +30,9 @@ stages:
         echo "Databricks part"
         echo "a"
         if [ ! -z "$(source_branch)" ]; then
-          BranchName="$(source_branch)"
+          BranchName=`echo $(source_branch)`
         else
-          BranchName=$(System.PullRequest.SourceBranch)
+          BranchName=`echo $(System.PullRequest.SourceBranch)`
         fi
         echo $(BranchName)
         echo $(Build.SourceBranch)

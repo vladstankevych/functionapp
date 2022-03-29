@@ -39,6 +39,7 @@ stages:
           else
             branchName=`echo $(System.PullRequest.SourceBranch)`
           fi
+          echo "Here's branch: $branchName + below"
           echo $branchName
           echo $(Build.SourceBranch)
           echo $(Build.SourceBranchName)
@@ -54,17 +55,27 @@ stages:
   - job: build_docker_image
     displayName: Build the Docker image
     timeoutInMinutes: 0
-    condition: ne(variables.ms_hosted_agent, 'ubuntu')
+    # condition: ne(variables.ms_hosted_agent, 'ubuntu')
     steps:
     - bash: echo "a"
 
-  - job: build_docker_image_hosted
+- stage: Build_docker_1
+  displayName: Build the Docker image
+  dependsOn: Build_docker
+  jobs:
+  - job: build_docker_image_1
     displayName: Build the Docker image
     timeoutInMinutes: 0
-    pool:
-      vmImage: ${{ variables.vmImageName1 }}
-    condition: eq(variables.ms_hosted_agent, 'ubuntu')
     steps:
-    - bash: |
-        echo "Azure functions part"
-        echo "a"
+    - bash: echo "last update: echo $(source_branch)"
+
+  #- job: build_docker_image_hosted
+  #  displayName: Build the Docker image
+  #  timeoutInMinutes: 0
+  #  pool:
+  #    vmImage: ${{ variables.vmImageName1 }}
+  #  condition: eq(variables.ms_hosted_agent, 'ubuntu')
+  #  steps:
+  #  - bash: |
+  #      echo "Azure functions part"
+  #      echo "a"

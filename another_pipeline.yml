@@ -45,6 +45,9 @@ stages:
           echo $(Build.Reason)
           echo $(Build.SourceBranch)
           echo $(Build.SourceBranchName)
+          
+          echo "On PR:"
+          echo $(System.PullRequest.SourceBranch)
 
 - stage: Build_docker
   # condition: ne(variables.part, 'azure_functions')

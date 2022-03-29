@@ -48,6 +48,26 @@ stages:
           
           echo "On PR:"
           echo $(System.PullRequest.SourceBranch)
+          
+    - bash: |
+        if [ $(Build.Reason) == "PullRequest" ]; then
+          if [ ! -z "$(source_branch)" ]; then
+            tag=`echo $(source_branch) | tr / _`
+          else
+            tag=`echo $(System.PullRequest.SourceBranch) | tr / _`
+        else
+          if [ $(Build.SourceBranchName) == "main" ]; then
+            tag="MainBranchIntegration"
+          else
+            tag=`echo $(Build.SourceBranch) | cut -d "/" -f3- | tr / _`
+          fi
+        image_tag="ecpfr-$tag"
+        echo "##vso[task.setvariable variable=ImageTag]$image_tag"
+      displayName: Get the pipeline variables
+      
+    - bash: |
+        echo "New line:"
+        echo $(ImageTag)
 
 - stage: Build_docker
   # condition: ne(variables.part, 'azure_functions')
@@ -63,7 +83,7 @@ stages:
 
 - stage: Build_docker_1
   displayName: Build the Docker image
-  dependsOn: Build_docker
+  dependsOn: First
   jobs:
   - job: build_docker_image_1
     displayName: Build the Docker image

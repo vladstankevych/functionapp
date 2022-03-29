@@ -41,11 +41,10 @@ stages:
           fi
           echo "Here's branch: $branchName + below"
           echo $branchName
+          echo "When no PR trigger:"
+          echo $(Build.Reason)
           echo $(Build.SourceBranch)
           echo $(Build.SourceBranchName)
-          echo $(Build.Reason)
-          echo $(System.PullRequest.SourceBranch) 
-          echo $(System.PullRequest.TargetBranch)
 
 - stage: Build_docker
   # condition: ne(variables.part, 'azure_functions')

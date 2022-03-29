@@ -1,10 +1,21 @@
-trigger: none
+trigger:
+  branches:
+    include:
+    - '*'
 
-pr: none
+pr:
+  branches:
+    include:
+    - '*'
 
 variables:
   output: "NO_OUTPUT"
-  
+  vmImageName: 'ubuntu-latest'
+  vmImageName1: 'windows-2022'
+
+pool:
+  vmImage: 'ubuntu-latest'
+
 stages:
 - stage: First
   # condition: ne(variables.part, 'databricks')
@@ -15,26 +26,83 @@ stages:
     pool:
       vmImage: ubuntu-latest
     steps:
+    - task: Bash@3
+      displayName: "Create or Get cluster"
+      inputs:
+        targetType: inline
+        script: |
+          echo $(source_branch)
+          echo "Databricks part"
+          echo "a"
+          if [ ! -z "$(source_branch)" ]; then
+            branchName=`echo $(source_branch)`
+          else
+            branchName=`echo $(System.PullRequest.SourceBranch)`
+          fi
+          echo "Here's branch: $branchName + below"
+          echo $branchName
+          echo "When no PR trigger:"
+          echo $(Build.Reason)
+          echo $(Build.SourceBranch)
+          echo $(Build.SourceBranchName)
+          
+          echo "On PR:"
+          echo $(System.PullRequest.SourceBranch)
+          
     - bash: |
-        echo "Databricks part"
-        echo "a"
-        echo $(Build.SourceBranch)
-        echo $(Build.SourceBranchName)
+        if [ $(Build.Reason) == "PullRequest" ]; then
+          if [ ! -z "$(source_branch)" ]; then
+            tag=`echo $(source_branch) | tr / _`
+          else
+            tag=`echo $(System.PullRequest.SourceBranch) | tr / _`
+          fi
+        else
+          if [ $(Build.SourceBranchName) == "main" ]; then
+            tag="MainBranchIntegration"
+          else
+            tag=`echo $(Build.SourceBranch) | cut -d "/" -f3- | tr / _`
+          fi
+        fi
+        image_tag="ecpfr-$tag"
+        echo "##vso[task.setvariable variable=ImageTag]$image_tag"
+      displayName: Get the pipeline variables
+      
+    - bash: |
+        echo "New line:"
+        echo $(ImageTag)
 
 - stage: Build_docker
-  condition: ne(variables.part, 'azure_functions')
+  # condition: ne(variables.part, 'azure_functions')
   displayName: Build the Docker image
   dependsOn: []
   jobs:
   - job: build_docker_image
     displayName: Build the Docker image
     timeoutInMinutes: 0
-    pool:
-      ${{ if ne(variables.ms_hosted_agent, 'true') }}:
-        name: ${{ variables.AgentsPoolName }}
-      ${{ if eq(variables.ms_hosted_agent, 'true') }}:
-        vmImage: ${{ variables.vmImageName }}
+    # condition: ne(variables.ms_hosted_agent, 'ubuntu')
+    steps:
+    - bash: echo "a"
+
+- stage: Build_docker_1
+  displayName: Build the Docker image
+  dependsOn: First
+  jobs:
+  - job: build_docker_image_1
+    displayName: Build the Docker image
+    timeoutInMinutes: 0
     steps:
     - bash: |
-        echo "Azure functions part"
-        echo "a"
+        echo "last update: $(source_branch)"
+        echo $(source_branch)
+    
+
+  #- job: build_docker_image_hosted
+  #  displayName: Build the Docker image
+  #  timeoutInMinutes: 0
+  #  pool:
+  #    vmImage: ${{ variables.vmImageName1 }}
+  #  condition: eq(variables.ms_hosted_agent, 'ubuntu')
+  #  steps:
+  #  - bash: |
+  #      echo "Azure functions part"
+  #      echo "a"

@@ -55,12 +55,14 @@ stages:
             tag=`echo $(source_branch) | tr / _`
           else
             tag=`echo $(System.PullRequest.SourceBranch) | tr / _`
+          fi
         else
           if [ $(Build.SourceBranchName) == "main" ]; then
             tag="MainBranchIntegration"
           else
             tag=`echo $(Build.SourceBranch) | cut -d "/" -f3- | tr / _`
           fi
+        fi
         image_tag="ecpfr-$tag"
         echo "##vso[task.setvariable variable=ImageTag]$image_tag"
       displayName: Get the pipeline variables

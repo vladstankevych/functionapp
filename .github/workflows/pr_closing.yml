@@ -22,8 +22,8 @@ jobs:
 
     - uses: Azure/pipelines@v1.2
       with:
-        azure-devops-project-url: '${{ AZ_DEVOPS_PROJECT_URL }}'
-        azure-pipeline-name: '${{ AZ_DEVOPS_PIPELINE_NAME }}' # name of the Azure pipeline to be triggered
+        azure-devops-project-url: '${{ env.AZ_DEVOPS_PROJECT_URL }}'
+        azure-pipeline-name: '${{ env.AZ_DEVOPS_PIPELINE_NAME }}' # name of the Azure pipeline to be triggered
         azure-devops-token: '${{ secrets.AZURE_DEVOPS_TOKEN }}'
         azure-pipeline-variables:  '{"source_branch": "${{ github.event.pull_request.head.ref }}"}' # optional stringified json
 

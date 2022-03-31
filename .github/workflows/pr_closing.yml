@@ -20,28 +20,35 @@ jobs:
 
     - uses: actions/checkout@v2
 
-    # Install nodejs for script to run Azure Pipeline
-    - uses: actions/setup-node@v2
+    - uses: Azure/pipelines@v1
       with:
-        node-version: '14'
+        azure-devops-project-url: '$AZ_DEVOPS_PROJECT_URL'
+        azure-pipeline-name: '$AZ_DEVOPS_PIPELINE_NAME' # name of the Azure pipeline to be triggered
+        azure-devops-token: '${{ secrets.AZURE_DEVOPS_TOKEN }}'
+        azure-pipeline-variables:  '{"source_branch": "${{ github.event.pull_request.head.ref }}"}' # optional stringified json
+
+    # Install nodejs for script to run Azure Pipeline
+    #- uses: actions/setup-node@v2
+    #  with:
+    #    node-version: '14'
 
     # Run script to invoke pipeline
-    - name: Invoke Azure Pipeline with chosen parameters
-      run: |
-        npm i @actions/core azure-devops-node-api
-        src_folder="azure_pipelines/config/azure_pipeline_api/src"
-        input_vars="\"source_branch\": \"${{ github.head_ref }}\""
-        echo "head_ref: ${{ github.head_ref }} \n"
-        echo "pr.head.ref: ${{ github.event.pull_request.head.ref }}"
-        echo "pr.head.sha: ${{ github.event.pull_request.head.sha }}"
-
-        more $GITHUB_EVENT_PATH
-
-        sed -i "s|\[GITHUB_REPOSITORY\]|$GITHUB_REPOSITORY|" $src_folder/pipeline.runner.js
-        sed -i "s|\[GITHUB_BRANCH_REF\]|refs/pull/${{ github.event.number }}/merge|" $src_folder/pipeline.runner.js
-        sed -i "s|\[GITHUB_BRANCH_SHA\]|${{ github.event.pull_request.head.ref }}|" $src_folder/pipeline.runner.js
-        sed -i "s|\[AZ_DEVOPS_PROJECT_URL\]|$AZ_DEVOPS_PROJECT_URL|" $src_folder/task.parameters.js
-        sed -i "s|\[AZ_DEVOPS_PIPELINE_NAME\]|$AZ_DEVOPS_PIPELINE_NAME|" $src_folder/task.parameters.js
-        sed -i "s|\[AZURE_DEVOPS_TOKEN\]|${{ secrets.AZURE_DEVOPS_TOKEN }}|" $src_folder/task.parameters.js
-        sed -i "s|\[PIPELINE_INPUT_VARIABLES\]|$input_vars|" $src_folder/task.parameters.js
-        node $src_folder/main.js
+    #- name: Invoke Azure Pipeline with chosen parameters
+    #  run: |
+    #    npm i @actions/core azure-devops-node-api
+    #    src_folder="azure_pipelines/config/azure_pipeline_api/src"
+    #    input_vars="\"source_branch\": \"${{ github.head_ref }}\""
+    #    echo "head_ref: ${{ github.head_ref }} \n"
+    #    echo "pr.head.ref: ${{ github.event.pull_request.head.ref }}"
+    #    echo "pr.head.sha: ${{ github.event.pull_request.head.sha }}"
+#
+    #    more $GITHUB_EVENT_PATH
+#
+    #    sed -i "s|\[GITHUB_REPOSITORY\]|$GITHUB_REPOSITORY|" $src_folder/pipeline.runner.js
+    #    sed -i "s|\[GITHUB_BRANCH_REF\]|refs/pull/${{ github.event.number }}/merge|" $src_folder/pipeline.runner.js
+    #    sed -i "s|\[GITHUB_BRANCH_SHA\]|${{ github.event.pull_request.head.ref }}|" $src_folder/pipeline.runner.js
+    #    sed -i "s|\[AZ_DEVOPS_PROJECT_URL\]|$AZ_DEVOPS_PROJECT_URL|" $src_folder/task.parameters.js
+    #    sed -i "s|\[AZ_DEVOPS_PIPELINE_NAME\]|$AZ_DEVOPS_PIPELINE_NAME|" $src_folder/task.parameters.js
+    #    sed -i "s|\[AZURE_DEVOPS_TOKEN\]|${{ secrets.AZURE_DEVOPS_TOKEN }}|" $src_folder/task.parameters.js
+    #    sed -i "s|\[PIPELINE_INPUT_VARIABLES\]|$input_vars|" $src_folder/task.parameters.js
+    #    node $src_folder/main.js

@@ -9,7 +9,7 @@ pr:
     - '*'
 
 variables:
-  output: "NO_OUTPUT"
+  output: "NO_OUTPUT/"
   vmImageName: 'ubuntu-latest'
   vmImageName1: 'windows-2022'
 

@@ -17,4 +17,4 @@
 pyspark==3.1.2
 
 # Alows using delta tables on local deployments
-delta-spark
+delta-spark~=1.0.0

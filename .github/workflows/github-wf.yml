@@ -16,7 +16,7 @@ jobs:
         # not required to run Continuous Winning (CW has its own Python environment in a Docker
         # container): this is for running your own tests on your own code
         python-version:
-          - "3.8"
+          - "3.9"
           # - "3.9"
           # - "3.10"
         package-extras:

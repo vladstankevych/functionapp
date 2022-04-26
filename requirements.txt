@@ -1,5 +1,6 @@
 # CPFR Core library
 pg-ds-cf-cpfr-core~=0.7.1
+pg-ds-cf-cpfr-utils[spark,sklearn,statsmodels,lgbm,optuna,tsfeats]~=0.8.12
 
 # Pandas dataframes validations
 # pandas handled by core

@@ -104,11 +104,11 @@ jobs:
           set -e
           pip install -r requirements.txt
           pip install -r requirements-devel.txt
-          # pip install -r requirements-spark.txt
+          pip install -r requirements-spark.txt
 
       # Now install the Python package itself
       - name: Install This Python Package
-        run: python test/run_pytest.py && echo '::set-output name=success::true'
+        run: python -m pytest test/tests
           
 
       # CW check. This lints your source code using Flake8. The `continue-on-error` parameter makes

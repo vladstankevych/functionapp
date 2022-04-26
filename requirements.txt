@@ -1,0 +1,22 @@
+# CPFR Core library
+pg-ds-cf-cpfr-core~=0.7.1
+
+# Pandas dataframes validations
+# pandas handled by core
+pandas-schema~=0.3.5
+pyarrow~=7.0.0
+
+# Azure dependencies
+azure-identity~=1.7.1
+azure-keyvault-secrets~=4.3.0
+azure-storage-blob~=12.9.0
+# msal~=1.16.0 # managed by azure deps
+
+# File types
+openpyxl~=3.0.9  # Excel read/write, prefer this to xlsxwriter
+
+# Misc requirements
+importlib_metadata
+typing_extensions
+psutil~=5.9.0  # process utilities that work on Windows and Linux
+email-validator~=1.1.3  # used by pydantic as an extra

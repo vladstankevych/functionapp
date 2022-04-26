@@ -108,7 +108,7 @@ jobs:
 
       # Now install the Python package itself
       - name: Install This Python Package
-        run: python -m pytest test/tests
+        run: python test/run_pytest.py
           
 
       # CW check. This lints your source code using Flake8. The `continue-on-error` parameter makes

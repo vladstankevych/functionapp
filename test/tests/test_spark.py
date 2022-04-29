@@ -25,7 +25,7 @@ def get_spark_session() -> SparkSession:
         builder = (
             SparkSession.builder.appName("CPFR-Spark-Session")
             .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
-            #.config("spark.jars.packages", "io.delta:delta-core_2.12:0.8.0")
+            .config("spark.jars.packages", "io.delta:delta-core_2.12:0.8.0")
             .config(
                 "spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog"
             )
@@ -42,7 +42,7 @@ data = [
 primary_key_columns = ["column1", "column2"]
 spark = get_spark_session()
 
-def test_tracking_change_in_one_row():
+def test_tracking_change_in_two_row():
     """Tests when a single row has changed."""
     
     df = spark.range(10000000).withColumn("example_data", sf.rand(seed=42) * 3)
@@ -51,3 +51,33 @@ def test_tracking_change_in_one_row():
 
     new_df = spark.table("example_table")
     assert "example_data" in new_df.schema.fieldNames()
+
+def test_tracking_change_in_three_row():
+    """Tests when a single row has changed."""
+    
+    df = spark.range(10000000).withColumn("example_data1", sf.rand(seed=42) * 3)
+
+    df.write.mode("overwrite").format("delta").saveAsTable("example_table1")
+
+    new_df = spark.table("example_table1")
+    assert "example_data1" in new_df.schema.fieldNames()
+
+def test_tracking_change_in_four_row():
+    """Tests when a single row has changed."""
+    
+    df = spark.range(10000000).withColumn("example_data2", sf.rand(seed=42) * 3)
+
+    df.write.mode("overwrite").format("delta").saveAsTable("example_table2")
+
+    new_df = spark.table("example_table2")
+    assert "example_data2" in new_df.schema.fieldNames()
+
+def test_tracking_change_in_five_row():
+    """Tests when a single row has changed."""
+    
+    df = spark.range(10000000).withColumn("example_data3", sf.rand(seed=42) * 3)
+
+    df.write.mode("overwrite").format("delta").saveAsTable("example_table3")
+
+    new_df = spark.table("example_table3")
+    assert "example_data3" in new_df.schema.fieldNames()

@@ -50,4 +50,5 @@ jobs:
         run: |
           pytest --cov=/home/runner/work/functionapp/functionapp \
           -vvv -m not flaky -n4 --force-sugar -p no:cacheprovider \
-          --html=pytest_report/index.html --durations=10 /home/runner/work/functionapp/functionapp
+          --html=pytest_report/index.html --durations=10 test/tests
+          #/home/runner/work/functionapp/functionapp

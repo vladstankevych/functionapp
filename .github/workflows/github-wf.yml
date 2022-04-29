@@ -48,4 +48,6 @@ jobs:
       # Now install the Python package itself
       - name: Run tests
         run: |
-          cpfr test run-ci
+          pytest --cov=/home/runner/work/functionapp/functionapp \
+          -vvv -m not flaky -n4 --force-sugar -p no:cacheprovider \
+          --html=pytest_report/index.html --durations=10 /home/runner/work/functionapp/functionapp

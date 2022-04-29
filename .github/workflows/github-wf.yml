@@ -11,76 +11,20 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # Several Python versions can be specified: all tests will be rerun for every version
-        # Useful when migrating from one Python version to the next. Note that enabling Python is
-        # not required to run Continuous Winning (CW has its own Python environment in a Docker
-        # container): this is for running your own tests on your own code
         python-version:
           - "3.8"
-          # - "3.9"
-          # - "3.10"
         package-extras:
           - devel
           - "devel,spark,statsmodels,sklearn,lgbm,optuna,xarray"
-          # NOTE: Not specifying `orch` due to `pyodbc` installation issues.
     steps:
       # Do not remove: useful for debug purposes
       - name: Dump event JSON and environment
         run: cat "$GITHUB_EVENT_PATH"; env
 
-      # Check if the proper secret has been set - it should be an org token
-      #- name: Check if secret PG_DNA_GITHUB_TOKEN is available
-      #  env:
-      #    PG_DNA_GITHUB_TOKEN: ${{ secrets.PG_DNA_GITHUB_TOKEN }}
-      #  run: |
-      #    if [[ ! $PG_DNA_GITHUB_TOKEN ]]; then
-      #        MSG='Secret `PG_DNA_GITHUB_TOKEN` was not found.'
-      #        MSG="${MSG} It should be an Organization Secret with scopes \`repo:*\` and"
-      #        MSG="${MSG} \`packages:read\`, and \`Enable SSO\` should be done too."
-      #        MSG="${MSG} Go here - https://github.com/settings/tokens - to create a Personal Access Token."
-      #        MSG="${MSG} See https://github.com/procter-gamble/de-cf-cw for more information."
-      #        echo "::error::${MSG}"
-      #        exit 1
-      #    fi
-      # FIXME: Add SonarQube token and reenable
-      # - name: Check if secret SONAR_TOKEN is available
-      #   env:
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      #   run: |
-      #     if [[ ! ${SONAR_TOKEN} ]]; then
-      #       echo "::error::Secret \`SONAR_TOKEN\` was not found: it is required to use SonarQube."
-      #       exit 1
-      #     fi
-
-      # Use PG_DNA_GITHUB_TOKEN by default for all git operations
-      #- name: Configure PG_DNA_GITHUB_TOKEN as default git token on github.com/procter-gamble only
-      #  env:
-      #    PG_DNA_GITHUB_TOKEN: ${{ secrets.PG_DNA_GITHUB_TOKEN }}
-      #  run: |
-      #    set -e
-      #    git config --global credential.https://github.com/procter-gamble/.helper "! f() { echo username=pgcw; echo password=$PG_DNA_GITHUB_TOKEN; }; f"
-      #    echo '::warning::Using PG_DNA_GITHUB_TOKEN for git operations on github.com/procter-gamble'
-      # Do not remove: fetches your code in the current dir. Full clone (0 depth), not shallow (makes SQ happy)
       - uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
-
-      # Do not remove: it enables Continuous Winning
-      #- name: Login to the GitHub Container Registry for getting Continuous Winning
-      #  uses: azure/docker-login@v1
-      #  with:
-      #    login-server: ghcr.io
-      #    username: pgcw
-      #    password: ${{ secrets.PG_DNA_GITHUB_TOKEN }}
-#
-      #- name: Cancel All Outdated Workflows
-      #  if: |
-      #    startsWith(github.ref, 'refs/heads/') || startsWith(github.event_name, 'pull_request')
-      #  uses: ./cw
-      #  with:
-      #    check: cancel-uncompleted-workflows
-      #    args: "--token ${{ secrets.GITHUB_TOKEN }} --workflows cw.yml --preserve-run most-recent"
 
       # Enable Python for your testing
       - name: Enable Python ${{ matrix.python-version }}
@@ -88,17 +32,12 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      # Configure Azure Artifacts for internal Python requirements, such as CPFR Core.
-      # This will set pip to use it as an extra index. echo to $GITHUB_ENV is described here:
-      # https://docs.github.com/en/actions/learn-github-actions/workflow-commands-for-github-actions#setting-an-environment-variable
       - name: Configure Azure Artifacts
         run: |
           set -e
           pip install pip==21.2.4 keyring artifacts-keyring
           echo "PIP_EXTRA_INDEX_URL=${{ secrets.AZURE_ARTIFACTS_URL }}" >> $GITHUB_ENV
-      # If you have Python enabled in your environment, you may want to check whether your
-      # requirement files work - can your package be installed?
-      # This will also fail on any dependency conflicts
+
       - name: Install Python Dependencies
         run: |
           set -e
@@ -109,74 +48,3 @@ jobs:
       # Now install the Python package itself
       - name: Install This Python Package
         run: python test/run_pytest.py
-          
-
-      # CW check. This lints your source code using Flake8. The `continue-on-error` parameter makes
-      # the test green at all times. This is OK since we have a separate red/green state for this
-      #- name: Lint Python Excluding Notebooks
-      #  uses: ./cw
-      #  with:
-      #    check: lint-python
-      #    args: "--token ${{ secrets.GITHUB_TOKEN }} --dirs .,src/** --dont-check-notebooks"
-      #  continue-on-error: true
-
-      # CW check. This makes sure notebooks have no output. It has a custom state, this is why
-      ## `continue_on_error` is `true`.
-      #- name: Ensure Notebooks Have No Output Cells
-      #  uses: ./cw
-      #  with:
-      #    check: ensure-ipynb-no-output
-      #    args: "--token ${{ secrets.GITHUB_TOKEN }} --dirs notebooks/**"
-      #  continue-on-error: true
-
-      # CW check. This checks that all your modules have `__init__.py` as required
-      # THIS IS DISABLED, since we use namespace modules.
-      # - name: Check Python Modules Structure
-      #   uses: ./cw
-      #   with:
-      #     check: check-python-modules-structure
-      #     args: '--dirs src/**'
-
-      # Not part of Continuous Winning! This is running your own tests assuming that:
-      #  * you have enabled the Python environment above
-      #  * you have all the proper dependencies (including `coverage`) installed
-      #  * you are using pytest
-      #  * you have some actual tests defined
-      # Please also remember that the CW environment and your own environment are different
-      #- name: Run all tests with coverage
-      #  id: run-pytest-cov
-      #  run: cpfr test run-ci && echo '::set-output name=success::true'
-      #  # run: python test/run_pytest_cov.py && echo '::set-output name=success::true'
-      #  continue-on-error: true
-
-      # FIXME: Add SonarQube token and reenable
-      # - name: Run SonarScanner And Push Data to SonarQube
-      #   uses: ./cw
-      #   with:
-      #     check: sonar-scanner
-      #     args: "--sonar-token ${{ secrets.SONAR_TOKEN }}"
-
-      # CW check. This posts the coverage report directly as a PR comment. File `coverage.txt`
-      # produced by the previous steps must exist! The check is only executed if we are on a PR. If
-      # we are not, we have no comment thread, and therefore it does not make sense to post
-      #- name: Post Coverage Report
-      #  uses: ./cw
-      #  if: |
-      #    startsWith(github.event_name, 'pull_request')
-      #  with:
-      #    check: post-coverage-report
-      #    args: "--token ${{ secrets.GITHUB_TOKEN }}"
-      #  continue-on-error: true
-
-      ## Upload build reports
-      #- uses: actions/upload-artifact@v2
-      #  with:
-      #    name: build-report
-      #    path: |
-      #      htmlcov/
-      #      pytest_report/
-      #      coverage.json
-      # Fail if coverage failed
-      #- name: Fail if tests with coverage failed
-      #  if: steps.run-pytest-cov.outputs.success != 'true'
-      #  run: exit 1

@@ -73,4 +73,5 @@ jobs:
         shell: bash -l {0}
         run: |
           conda activate cpfr-utils
-          cpfr test run-ci
+          conda list
+          pytest test/tests

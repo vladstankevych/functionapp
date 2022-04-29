@@ -72,5 +72,5 @@ jobs:
       - name: Run tests
         shell: bash -l {0}
         run: |
-          conda env list
+          conda activate cpfr-utils
           cpfr test run-ci

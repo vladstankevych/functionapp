@@ -51,7 +51,7 @@ jobs:
         shell: bash -l {0}
         run: |
           conda env create --file environment.yml
-          conda activate utils
+          conda activate cpfr-utils
 
 #      - uses: conda-incubator/setup-miniconda@v2
 #       with:

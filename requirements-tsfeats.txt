@@ -1,0 +1,8 @@
+# Requirements for time series features
+shap~=0.40.0
+tsfresh~=0.19.0
+stumpy~=1.10.2
+
+# Additional requirements (specified more exactly per extra)
+scikit-learn
+lightgbm

@@ -1,0 +1,5 @@
+# Extra dependencies for LightGBM
+
+lightgbm~=3.3.2
+
+# also consider 'optuna' extra

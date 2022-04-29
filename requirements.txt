@@ -1,5 +1,5 @@
 # CPFR Core library
-pg-ds-cf-cpfr-core~=0.7.3
+pg-ds-cf-cpfr-core~=0.7.1
 
 # Pandas dataframes validations
 # pandas handled by core

@@ -1,0 +1,8 @@
+# Extra requirements for orchestration
+
+# PyODBC can cause some issues.
+# To fix them, you can try:
+# - adding "pyodbc=4.0.30" to your conda (non-pip) environment.yml
+# - `conda install -c conda-forge pyodbc=4.0.30`
+# - installing `unixodbc` on your Linix OS/WSL (e.g. `apt get unixodbc`)
+pyodbc==4.0.30

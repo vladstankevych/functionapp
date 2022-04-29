@@ -53,4 +53,4 @@ jobs:
 
       # Now install the Python package itself
       - name: Install This Python Package
-        run: python test/run_pytest.py
+        run: cpfr test run-ci

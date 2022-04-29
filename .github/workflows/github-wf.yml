@@ -9,6 +9,9 @@ on:
 jobs:
   checks:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
     strategy:
       matrix:
         python-version:
@@ -31,25 +34,26 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
-      
-      - name: install java
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'zulu'
-          java-version: '11'
 
       - name: Configure Azure Artifacts
         run: |
           set -e
-          pip install pip==22.0.4 keyring artifacts-keyring
+          pip install pip==21.2.4 keyring artifacts-keyring
           echo "PIP_EXTRA_INDEX_URL=${{ secrets.AZURE_ARTIFACTS_URL }}" >> $GITHUB_ENV
 
-      - name: Install Python Dependencies
-        run: |
-          set -e
-          pip install -r requirements.txt
-          pip install -r requirements-devel.txt
-          pip install -r requirements-spark.txt
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: utils
+          environment-file: environment.yml
+          python-version: 3.8
+          auto-activate-base: false
+#      - name: Install Python Dependencies
+#        run: |
+#          set -e
+#          pip install -r requirements.txt
+#          pip install -r requirements-devel.txt
+#          pip install -r requirements-spark.txt
+
 
       # Now install the Python package itself
       - name: Install This Python Package

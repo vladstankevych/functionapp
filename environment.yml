@@ -1,0 +1,10 @@
+name: cpfr-utils
+channels:
+  - conda-forge
+dependencies:
+  - python=3.8
+  - pip=21.2
+  #
+  - pyodbc=4.0.30 # often causes an issue due to ubuntu not shipping with unixODBC
+  - pip:
+      - -e .[devel,spark,xarray,statsmodels,sklearn,lgbm,optuna,tsfeats,orch]

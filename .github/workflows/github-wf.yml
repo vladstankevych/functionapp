@@ -52,6 +52,7 @@ jobs:
         run: |
           conda env create --file environment.yml
           conda activate cpfr-utils
+          conda env list
 
 #      - uses: conda-incubator/setup-miniconda@v2
 #       with:
@@ -69,4 +70,7 @@ jobs:
 
       # Now install the Python package itself
       - name: Run tests
-        run: cpfr test run-ci
+        shell: bash -l {0}
+        run: |
+          conda env list
+          cpfr test run-ci

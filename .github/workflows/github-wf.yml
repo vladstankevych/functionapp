@@ -9,9 +9,6 @@ on:
 jobs:
   checks:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash -l {0}
     strategy:
       matrix:
         python-version:
@@ -40,38 +37,16 @@ jobs:
           set -e
           pip install pip==21.2.4 keyring artifacts-keyring
           echo "PIP_EXTRA_INDEX_URL=${{ secrets.AZURE_ARTIFACTS_URL }}" >> $GITHUB_ENV
-          pip config set global.extra-index-url "${{ secrets.AZURE_ARTIFACTS_URL }}"
 
-      - uses: conda-incubator/setup-miniconda@v2
-        with:
-          miniconda-version: "latest"
-          activate-environment: foo
-
-      - name: Bash
-        shell: bash -l {0}
+      - name: Install Python Dependencies
         run: |
-          conda env create --file environment.yml
-          conda activate cpfr-utils
-          conda env list
-
-#      - uses: conda-incubator/setup-miniconda@v2
-#       with:
-#         activate-environment: utils
-#         environment-file: environment.yml
-#         python-version: 3.8
-#         auto-activate-base: false
-#      - name: Install Python Dependencies
-#        run: |
-#          set -e
-#          pip install -r requirements.txt
-#          pip install -r requirements-devel.txt
-#          pip install -r requirements-spark.txt
-
+          set -e
+          pip install -r requirements.txt
+          pip install -r requirements-devel.txt
+          pip install -r requirements-spark.txt
 
       # Now install the Python package itself
       - name: Run tests
-        shell: bash -l {0}
         run: |
-          conda activate cpfr-utils
-          conda list
           pytest test/tests
+          cpfr test run-ci

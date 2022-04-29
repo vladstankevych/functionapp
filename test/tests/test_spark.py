@@ -25,6 +25,7 @@ def get_spark_session() -> SparkSession:
         builder = (
             SparkSession.builder.appName("CPFR-Spark-Session")
             .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
+            .config("spark.jars.packages", "io.delta:delta-core_2.12:0.8.0")
             .config(
                 "spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog"
             )

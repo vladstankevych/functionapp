@@ -41,6 +41,12 @@ def _main():
 
     cmd = [
         "pytest",
+        "--cov=test",
+        "-vvv",
+        "-m",
+        "not flaky",
+        "--html=pytest_report/index.html",
+        "--durations=10",
         "test/tests",
     ]
 
@@ -66,13 +72,13 @@ def _main():
     except CalledProcessError:
         sys.exit(1)
 
-#    # Save coverage report as text
-#    with open("coverage.txt", "wb") as fp:
-#        run(["coverage", "report"], check=True, stdout=fp)
-#
-#    # Produce HTML and XML reports too
-#    for mode in ("html", "xml", "json"):
-#        run(["coverage", mode], check=True)
+    # Save coverage report as text
+    with open("coverage.txt", "wb") as fp:
+        run(["coverage", "report"], check=True, stdout=fp)
+
+    # Produce HTML and XML reports too
+    for mode in ("html", "xml", "json"):
+        run(["coverage", mode], check=True)
 
 
 if __name__ == "__main__":

@@ -39,10 +39,9 @@ data = [
 ]
 primary_key_columns = ["column1", "column2"]
 
-spark = get_spark_session()
-
 def test_tracking_change_in_two_row():
     """Tests when a single row has changed."""
+    spark = get_spark_session()
     #spark = SparkSession.builder.getOrCreate()
 
     df = spark.createDataFrame(data)

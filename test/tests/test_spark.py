@@ -1,7 +1,7 @@
 """Tests utilities for spark."""
 
 from pandas._typing import FilePath
-from pyspark.sql import SparkSession
+from pyspark.sql import SparkSession, Row
 from cpfr.utils.extras.spark import get_spark_session
 
 

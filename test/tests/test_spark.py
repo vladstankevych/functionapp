@@ -8,7 +8,7 @@ from delta import configure_spark_with_delta_pip
 from delta.tables import DeltaTable
 
 from pandas._typing import FilePath
-#from pyspark.sql import DataFrame, SparkSession, Row
+from pyspark.sql import DataFrame, SparkSession, Row
 
 
 
@@ -39,9 +39,10 @@ data = [
 ]
 primary_key_columns = ["column1", "column2"]
 
+spark = get_spark_session()
+
 def test_tracking_change_in_two_row():
     """Tests when a single row has changed."""
-    spark = get_spark_session()
     #spark = SparkSession.builder.getOrCreate()
 
     df = spark.createDataFrame(data)
@@ -55,7 +56,7 @@ def test_tracking_change_in_two_row():
 
 def test_tracking_change_in_three_row():
     """Tests when a single row has changed."""
-    spark = get_spark_session()
+    #spark = get_spark_session()
     
     df = spark.range(10000000).withColumn("example_data1", sf.rand(seed=42) * 3)
 

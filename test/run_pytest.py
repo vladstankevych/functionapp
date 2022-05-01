@@ -41,7 +41,7 @@ def _main():
 
     cmd = [
         "pytest",
-        "--cov=src",
+        "--cov=test",
         "-vvv",
         "-m",
         "not flaky",  # TODO: Make this configurable
@@ -52,7 +52,7 @@ def _main():
         "no:cacheprovider",
         "--html=pytest_report/index.html",
         "--durations=10",
-        "src",
+        "test/tests",
     ]
     try:
         print(f"Running: {' '.join(cmd)}")  # noqa

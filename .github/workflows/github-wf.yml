@@ -40,10 +40,14 @@ jobs:
 
       - name: Install Python Dependencies
         run: |
+          # set -e
+          # pip install -r requirements.txt
+          # pip install -r requirements-devel.txt
+          # pip install -r requirements-spark.txt
           set -e
           pip install -r requirements.txt
           pip install -r requirements-devel.txt
-          pip install -r requirements-spark.txt
+          pip install -r requirements-orch.txt
 
       # Now install the Python package itself
       - name: Run tests

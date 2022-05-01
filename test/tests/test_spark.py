@@ -8,7 +8,7 @@ from delta import configure_spark_with_delta_pip
 from delta.tables import DeltaTable
 
 from pandas._typing import FilePath
-from pyspark.sql import DataFrame, SparkSession, Row
+#from pyspark.sql import DataFrame, SparkSession, Row
 
 
 

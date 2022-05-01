@@ -12,10 +12,10 @@ jobs:
     strategy:
       matrix:
         python-version:
-          - "3.8"
+          - "3.9"
         package-extras:
           - devel
-          - "devel,spark,statsmodels,sklearn,lgbm,optuna,xarray"
+          #- "devel,spark,statsmodels,sklearn,lgbm,optuna,xarray"
     steps:
       # Do not remove: useful for debug purposes
       - name: Dump event JSON and environment

@@ -39,19 +39,21 @@ def _main():
         filt = []
         xdist = ["-n4"]
 
-    cmd = (
-        ["pytest", "--cov=src", "-vvv"]
-        + filt
-        + xdist
-        + [
-            "--force-sugar",
-            "-p",
-            "no:cacheprovider",
-            "--html=pytest_report/index.html",
-            "--durations=10",
-            "test/tests",
-        ]
-    )
+    cmd = [
+        "pytest",
+        "--cov=src",
+        "-vvv",
+        "-m",
+        "not flaky",  # TODO: Make this configurable
+        *filt,
+        *xdist,
+        "--force-sugar",
+        "-p",
+        "no:cacheprovider",
+        "--html=pytest_report/index.html",
+        "--durations=10",
+        "src",
+    ]
     try:
         print(f"Running: {' '.join(cmd)}")  # noqa
         run(cmd, check=True)

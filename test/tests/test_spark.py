@@ -1,37 +1,29 @@
 """Tests utilities for spark."""
 
-import tempfile
-import logging
-import uuid
-from typing import List
-from datetime import datetime
-
-from delta import configure_spark_with_delta_pip
-from delta.tables import DeltaTable
-
 from pandas._typing import FilePath
-from pyspark.sql import DataFrame, SparkSession, Row
-from pyspark.sql import functions as sf
-from pyspark.sql.types import BooleanType, TimestampType
+from cpfr.utils.extras.spark import get_spark_session
 
-def get_spark_session() -> SparkSession:
-    """Gets the :class:`SparkSession` instance. If it doesn't exist it builds a new one."""
-    existing = SparkSession.getActiveSession()  # on Databricks a session is always already running
-    if existing:
-        return existing
-    else:
-        # outside of Databricks the session needs to be created on first invocation
-        logging.warning("Could not find an existing Spark session. Creating a new one...")
-        builder = (
-            SparkSession.builder.appName("CPFR-Spark-Session")
-            .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
-            #.config("spark.jars.packages", "io.delta:delta-core_2.12:0.8.0")
-            .config(
-                "spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog"
-            )
-        )
-        new_session = configure_spark_with_delta_pip(builder).getOrCreate()
-        return new_session
+
+
+
+#def get_spark_session() -> SparkSession:
+#    """Gets the :class:`SparkSession` instance. If it doesn't exist it builds a new one."""
+#    existing = SparkSession.getActiveSession()  # on Databricks a session is always already running
+#    if existing:
+#        return existing
+#    else:
+#        # outside of Databricks the session needs to be created on first invocation
+#        logging.warning("Could not find an existing Spark session. Creating a new one...")
+#        builder = (
+#            SparkSession.builder.appName("CPFR-Spark-Session")
+#            .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
+#            #.config("spark.jars.packages", "io.delta:delta-core_2.12:0.8.0")
+#            .config(
+#                "spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog"
+#            )
+#        )
+#        new_session = configure_spark_with_delta_pip(builder).getOrCreate()
+#        return new_session
 
 data = [
     Row(column1="A", column2=1, column3=True, column4=1.1),
@@ -43,7 +35,7 @@ primary_key_columns = ["column1", "column2"]
 
 def test_tracking_change_in_two_row():
     """Tests when a single row has changed."""
-    spark = SparkSession.builder.getOrCreate()
+    spark = get_spark_session()
 
     df = spark.createDataFrame(data)
 

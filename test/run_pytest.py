@@ -39,23 +39,40 @@ def _main():
         filt = []
         xdist = ["-n4"]
 
+    #cmd = [
+    #    "pytest",
+    #    "test/tests",
+    #]
+
     cmd = [
         "pytest",
-        "test/tests",
+        "--cov=src",
+        "-vvv",
+        "-m",
+        "not flaky",  # TODO: Make this configurable
+        *filt,
+        *xdist,
+        "--force-sugar",
+        "-p",
+        "no:cacheprovider",
+        "--html=pytest_report/index.html",
+        "--durations=10",
+        "src",
     ]
+
     try:
         print(f"Running: {' '.join(cmd)}")  # noqa
         run(cmd, check=True)
     except CalledProcessError:
         sys.exit(1)
 
-    ## Save coverage report as text
-    #with open("coverage.txt", "wb") as fp:
-    #    run(["coverage", "report"], check=True, stdout=fp)
-#
-    ## Produce HTML and XML reports too
-    #for mode in ("html", "xml", "json"):
-    #    run(["coverage", mode], check=True)
+    # Save coverage report as text
+    with open("coverage.txt", "wb") as fp:
+        run(["coverage", "report"], check=True, stdout=fp)
+
+    # Produce HTML and XML reports too
+    for mode in ("html", "xml", "json"):
+        run(["coverage", mode], check=True)
 
 
 if __name__ == "__main__":

@@ -44,7 +44,7 @@ def test_tracking_change_in_two_row():
     #df = spark.range(10000000).withColumn("example_data", sf.rand(seed=42) * 3)
     #df.write.mode("overwrite").format("delta").saveAsTable("example_table")
     #new_df = spark.table("example_table")
-    assert "A" in df.schema.fieldNames()
+    assert "column1" in df.schema.fieldNames()
 
 #def test_tracking_change_in_three_row():
 #    """Tests when a single row has changed."""

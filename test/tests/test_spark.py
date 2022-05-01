@@ -40,10 +40,10 @@ data = [
     Row(column1="D", column2=4, column3=True, column4=4.4),
 ]
 primary_key_columns = ["column1", "column2"]
-spark = get_spark_session()
 
 def test_tracking_change_in_two_row():
     """Tests when a single row has changed."""
+    spark = get_spark_session()
     
     df = spark.range(10000000).withColumn("example_data", sf.rand(seed=42) * 3)
 
@@ -54,6 +54,7 @@ def test_tracking_change_in_two_row():
 
 def test_tracking_change_in_three_row():
     """Tests when a single row has changed."""
+    spark = get_spark_session()
     
     df = spark.range(10000000).withColumn("example_data1", sf.rand(seed=42) * 3)
 
@@ -64,6 +65,7 @@ def test_tracking_change_in_three_row():
 
 def test_tracking_change_in_four_row():
     """Tests when a single row has changed."""
+    spark = get_spark_session()
     
     df = spark.range(10000000).withColumn("example_data2", sf.rand(seed=42) * 3)
 
@@ -74,6 +76,7 @@ def test_tracking_change_in_four_row():
 
 def test_tracking_change_in_five_row():
     """Tests when a single row has changed."""
+    spark = get_spark_session()
     
     df = spark.range(10000000).withColumn("example_data3", sf.rand(seed=42) * 3)
 

@@ -14,7 +14,7 @@
 # and the version of Spark (and pyspark) used by that runtime is 3.1.2
 # (see https://docs.databricks.com/release-notes/runtime/releases.html for details).
 # Therefore we use a "==" to ensure it will not resolve to a compatible newer version.
-pyspark==3.1.2
+pyspark==3.2.1
 
 # Alows using delta tables on local deployments
-delta-spark~=1.0.0
+delta-spark~=1.2.1

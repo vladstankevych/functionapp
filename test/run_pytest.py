@@ -44,6 +44,7 @@ def _main():
         "--cov=test",
         "-vvv",
         "-m",
+        "-n4",
         "not flaky",
         "--force-sugar",
         "-p",

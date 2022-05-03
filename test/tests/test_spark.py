@@ -48,20 +48,20 @@ spark = get_spark_session()
 #spark.conf.set("spark.unsafe.sorter.spill.read.ahead.enabled", False)
 #spark = SparkSession.builder.getOrCreate()
 
-#def test_tracking_change_in_two_row():
-#    """Tests when a single row has changed."""
-#    df = spark.createDataFrame(data)
-#
-#    type(df)
-#    assert "column1" in df.schema.fieldNames()
+def test_tracking_change_in_two_row():
+    """Tests when a single row has changed."""
+    df = spark.createDataFrame(data)
 
-#def test_just_spark():
-#    """Tests when a single row has changed."""
-#    #df = spark.range(100).withColumn("example_data1", sf.rand(seed=42) * 3)
-#    df = spark.createDataFrame(data)
-#
-#    type(df)
-#    assert "column1" in df.schema.fieldNames()
+    type(df)
+    assert "column1" in df.schema.fieldNames()
+
+def test_just_spark():
+    """Tests when a single row has changed."""
+    #df = spark.range(100).withColumn("example_data1", sf.rand(seed=42) * 3)
+    df = spark.createDataFrame(data)
+
+    type(df)
+    assert "column1" in df.schema.fieldNames()
 
 def test_tracking_change_in_three_row():
     """Tests when a single row has changed."""
@@ -71,12 +71,12 @@ def test_tracking_change_in_three_row():
     new_df = spark.table("example_table1")
     assert "example_data1" in new_df.schema.fieldNames()
 
-#def test_tracking_change_in_four_row():
-#    """Tests when a single row has changed."""
-#    
-#    df = spark.range(100).withColumn("example_data2", sf.rand(seed=42) * 3)
-#
-#    df.write.mode("overwrite").format("delta").saveAsTable("example_table2")
-#
-#    new_df = spark.table("example_table2")
-#    assert "example_data2" in new_df.schema.fieldNames()
+def test_tracking_change_in_four_row():
+    """Tests when a single row has changed."""
+    
+    df = spark.range(100).withColumn("example_data2", sf.rand(seed=42) * 3)
+
+    df.write.mode("overwrite").format("delta").saveAsTable("example_table2")
+
+    new_df = spark.table("example_table2")
+    assert "example_data2" in new_df.schema.fieldNames()

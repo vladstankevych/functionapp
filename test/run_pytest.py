@@ -45,7 +45,7 @@ def _main():
         "-vvv",
         "-m",
         "not flaky",
-        #"-n4",
+        "-n2",
         "--force-sugar",
         "-p",
         "no:cacheprovider",

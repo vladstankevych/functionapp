@@ -59,4 +59,4 @@ jobs:
       # Now install the Python package itself
       - name: Run tests
         run: |
-          python test/run_pytest.py
+          pytest test/tests

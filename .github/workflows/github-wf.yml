@@ -36,12 +36,12 @@ jobs:
         with:
           java-version: '11'
 
-      - uses: vemonet/setup-spark@v1
-        with:
-          spark-version: '3.1.2'
-          hadoop-version: '3.2'
-
-      - run: spark-submit --version
+      #- uses: vemonet/setup-spark@v1
+      #  with:
+      #    spark-version: '3.1.2'
+      #    hadoop-version: '3.2'
+#
+      #- run: spark-submit --version
 
       - name: Configure Azure Artifacts
         run: |

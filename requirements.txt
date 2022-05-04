@@ -23,7 +23,7 @@
 
 # D-CPFR Libraries - keep these updated!
 pg-ds-cf-cpfr-core~=0.7.3
-#pg-ds-cf-cpfr-utils[spark,sklearn,statsmodels,lgbm,optuna,tsfeats]~=0.8.14
+pg-ds-cf-cpfr-utils[spark,sklearn,statsmodels,lgbm,optuna,tsfeats]~=0.8.14
 
 # ML Core
 jupyter~=1.0.0

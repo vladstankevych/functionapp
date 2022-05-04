@@ -1,40 +1,8 @@
 """Tests utilities for spark."""
-import logging
-import pyspark
-import pyspark.sql
-import pytest
-from pandas._typing import FilePath
 from pyspark.sql import functions as sf
-from pyspark.sql import SparkSession, Row
-#from cpfr.utils.extras.spark import get_spark_session
+from pyspark.sql import Row
+from cpfr.utils.extras.spark import get_spark_session
 
-from delta import configure_spark_with_delta_pip
-from delta.tables import DeltaTable
-
-from pandas._typing import FilePath
-#from pyspark.sql import DataFrame, SparkSession, Row
-
-
-
-def get_spark_session() -> SparkSession:
-    """Gets the :class:`SparkSession` instance. If it doesn't exist it builds a new one."""
-    existing = SparkSession.getActiveSession()  # on Databricks a session is always already running
-    if existing:
-        return existing
-    else:
-        # outside of Databricks the session needs to be created on first invocation
-        logging.warning("Could not find an existing Spark session. Creating a new one...")
-        builder = (
-            SparkSession.builder.appName("CPFR-Spark-Session")
-            .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
-            #.config("spark.jars.packages", "io.delta:delta-core_2.12:0.8.0")
-            .config("spark.databricks.delta.schema.autoMerge.enabled", True)
-            .config(
-                "spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog"
-            )
-        )
-        new_session = configure_spark_with_delta_pip(builder).getOrCreate()
-        return new_session
 
 data = [
     Row(column1="A", column2=1, column3=True, column4=1.1),
@@ -42,9 +10,7 @@ data = [
     Row(column1="C", column2=3, column3=None, column4=3.3),
     Row(column1="D", column2=4, column3=True, column4=4.4),
 ]
-primary_key_columns = ["column1", "column2"]
 
-spark = get_spark_session()
 #spark.conf.set("spark.unsafe.sorter.spill.read.ahead.enabled", False)
 #spark = SparkSession.builder.getOrCreate()
 
@@ -55,38 +21,40 @@ spark = get_spark_session()
 #    type(df)
 #    assert "column1" in df.schema.fieldNames()
 
-def test_just_spark(spark_session):
+def test_just_spark():
     """Tests when a single row has changed."""
     #df = spark.range(100).withColumn("example_data1", sf.rand(seed=42) * 3)
-    df = spark_session.createDataFrame(data)
+    spark = get_spark_session()
+    df = spark.createDataFrame(data)
 
     type(df)
     assert "column1" in df.schema.fieldNames()
 
 def test_tracking_change_in_three_row():
     """Tests when a single row has changed."""
+    spark = get_spark_session()
     df = spark.range(10000000).withColumn("example_data", sf.rand(seed=42) * 3)
     df.write.mode("overwrite").format("delta").saveAsTable("example_table")
 
     new_df = spark.table("example_table1")
     assert "example_data1" in new_df.schema.fieldNames()
 
-def test_tracking_change_in_four_row(spark_session):
-    """Tests when a single row has changed."""
-    
-    df = spark_session.range(100).withColumn("example_data2", sf.rand(seed=42) * 3)
-
-    df.write.mode("overwrite").format("delta").saveAsTable("example_table2")
-
-    new_df = spark_session.table("example_table2")
-    assert "example_data2" in new_df.schema.fieldNames()
-
-#def test_tracking_change_in_five_row():
+#def test_tracking_change_in_four_row(spark_session):
 #    """Tests when a single row has changed."""
 #    
-#    df = spark.range(10000000).withColumn("example_data3", sf.rand(seed=42) * 3)
+#    df = spark_session.range(100).withColumn("example_data2", sf.rand(seed=42) * 3)
 #
-#    df.write.mode("overwrite").format("delta").saveAsTable("example_table3")
+#    df.write.mode("overwrite").format("delta").saveAsTable("example_table2")
 #
-#    new_df = spark.table("example_table3")
-#    assert "example_data3" in new_df.schema.fieldNames()
+#    new_df = spark_session.table("example_table2")
+#    assert "example_data2" in new_df.schema.fieldNames()
+
+def test_tracking_change_in_five_row():
+    """Tests when a single row has changed."""
+    spark = get_spark_session()
+    df = spark.range(10000000).withColumn("example_data3", sf.rand(seed=42) * 3)
+
+    df.write.mode("overwrite").format("delta").saveAsTable("example_table3")
+
+    new_df = spark.table("example_table3")
+    assert "example_data3" in new_df.schema.fieldNames()

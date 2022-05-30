@@ -11,9 +11,6 @@ data = [
     Row(column1="D", column2=4, column3=True, column4=4.4),
 ]
 
-#spark.conf.set("spark.unsafe.sorter.spill.read.ahead.enabled", False)
-#spark = SparkSession.builder.getOrCreate()
-
 #def test_tracking_change_in_two_row():
 #    """Tests when a single row has changed."""
 #    df = spark.createDataFrame(data)

@@ -32,10 +32,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - uses: actions/setup-java@v1
-        with:
-          java-version: '11'
-
       #- uses: vemonet/setup-spark@v1
       #  with:
       #    spark-version: '3.1.2'
@@ -54,7 +50,7 @@ jobs:
           set -e
           pip install -r requirements.txt
           pip install -r requirements-devel.txt
-          pip install -r requirements-spark.txt
+          pip install -r requirements-orch.txt
 
       # Now install the Python package itself
       - name: Run tests

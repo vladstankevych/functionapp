@@ -42,7 +42,7 @@ jobs:
       - name: Configure Azure Artifacts
         run: |
           set -e
-          pip install pip==21.2.4 keyring artifacts-keyring
+          pip install pip==22.1.1 keyring artifacts-keyring
           echo "PIP_EXTRA_INDEX_URL=${{ secrets.AZURE_ARTIFACTS_URL }}" >> $GITHUB_ENV
 
       - name: Install Python Dependencies

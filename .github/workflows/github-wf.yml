@@ -1,4 +1,4 @@
-name: P&G Continuous Winning
+name: Test
 
 on:
   pull_request_target: # will always use the workflow definition from master/main, not your PR!
@@ -15,7 +15,6 @@ jobs:
           - "3.9"
         package-extras:
           - devel
-          #- "devel,spark,statsmodels,sklearn,lgbm,optuna,xarray"
     steps:
       # Do not remove: useful for debug purposes
       - name: Dump event JSON and environment

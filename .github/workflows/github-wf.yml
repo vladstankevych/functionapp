@@ -51,7 +51,7 @@ jobs:
           pip install -r requirements-devel.txt
           pip install -r requirements-orch.txt
 
-       Now install the Python package itself
+      # Now install the Python package itself
       - name: Run init test
         run: |
           pytest test/tests/test_spark.py::test_init

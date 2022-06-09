@@ -59,6 +59,13 @@ def test_init():
     spark = get_spark_session()
     df = spark.range(10000000).withColumn("example_data1", sf.rand(seed=42) * 3)
     df.write.mode("overwrite").format("delta").saveAsTable("example_table1")
-
+    print('Hi')
     new_df = spark.table("example_table1")
     assert "example_data1" in new_df.schema.fieldNames()
+
+#spark = get_spark_session()
+#df = spark.range(10000000).withColumn("example_data1", sf.rand(seed=42) * 3)
+#df.write.mode("overwrite").format("delta").saveAsTable("example_table1")
+#print('Hi')
+#new_df = spark.table("example_table1")
+#assert "example_data1" in new_df.schema.fieldNames()

@@ -1,4 +1,5 @@
 """Tests utilities for spark."""
+import pytest
 from pyspark.sql import functions as sf
 from pyspark.sql import Row
 from cpfr.utils.extras.spark import get_spark_session

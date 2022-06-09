@@ -54,4 +54,5 @@ jobs:
       # Now install the Python package itself
       - name: Run tests
         run: |
+          pytest test/tests/test_spark.py::test_init
           python test/run_pytest.py

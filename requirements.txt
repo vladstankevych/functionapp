@@ -1,11 +1,12 @@
 # D-CPFR Libraries - keep these updated!
-pg-ds-cf-cpfr-core~=0.7.5
-pg-ds-cf-cpfr-utils[spark,sklearn,statsmodels,lgbm,optuna,tsfeats]~=0.9.4
+pg-ds-cf-cpfr-core~=0.7.7
+pg-ds-cf-cpfr-utils[spark,sklearn,statsmodels,lgbm,optuna,tsfeats]~=0.9.6
 
 # ML Core
 jupyter~=1.0.0
 numpy<1.22.0  # see https://github.com/aesara-devs/aesara/issues/715 but for theano
 pandas~=1.4.0
+mlflow==1.26.0 # Temp due to mlflow 1.26.1 introducing incompatible dependency on protobuf>=3.12.0 because currently matrixprofile (required by tsfresh) wants protobuf==3.11.2 (TODO: unpin when new matrixprofile is released that accepts a newer protobuf)
 # others are utils[EXTRAS]
 
 # Spark-related

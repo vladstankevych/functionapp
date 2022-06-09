@@ -32,7 +32,7 @@ def test_tracking_change_in_three_row():
     df = spark.range(10000000).withColumn("example_data", sf.rand(seed=42) * 3)
     df.write.mode("overwrite").format("delta").saveAsTable("example_table")
 
-    new_df = spark.table("example_table1")
+    new_df = spark.table("example_table")
     assert "example_data" in new_df.schema.fieldNames()
 
 #def test_tracking_change_in_four_row(spark_session):

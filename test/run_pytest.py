@@ -51,6 +51,7 @@ def _main():
         "no:cacheprovider",
         "--html=pytest_report/index.html",
         "--durations=10",
+        "--dist loadgroup"
         "test/tests",
     ]
 

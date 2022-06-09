@@ -26,6 +26,7 @@ data = [
 #    type(df)
 #    assert "column1" in df.schema.fieldNames()
 
+@pytest.mark.xdist_group(name="delta")
 def test_tracking_change_in_three_row():
     """Tests when a single row has changed."""
     spark = get_spark_session()
@@ -45,6 +46,7 @@ def test_tracking_change_in_three_row():
 #    new_df = spark_session.table("example_table2")
 #    assert "example_data2" in new_df.schema.fieldNames()
 
+@pytest.mark.xdist_group(name="delta")
 def test_tracking_change_in_five_row():
     """Tests when a single row has changed."""
     spark = get_spark_session()
@@ -54,6 +56,7 @@ def test_tracking_change_in_five_row():
     new_df = spark.table("example_table3")
     assert "example_data3" in new_df.schema.fieldNames()
 
+@pytest.mark.xdist_group(name="delta")
 def test_init():
     """Tests when a single row has changed."""
     spark = get_spark_session()

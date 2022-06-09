@@ -33,7 +33,7 @@ def test_tracking_change_in_three_row():
     df.write.mode("overwrite").format("delta").saveAsTable("example_table")
 
     new_df = spark.table("example_table1")
-    assert "example_data1" in new_df.schema.fieldNames()
+    assert "example_data" in new_df.schema.fieldNames()
 
 #def test_tracking_change_in_four_row(spark_session):
 #    """Tests when a single row has changed."""

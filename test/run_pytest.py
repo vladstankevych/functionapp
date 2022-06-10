@@ -47,12 +47,12 @@ def _main():
         "-m",
         "not flaky",
         "-n4",
+        "--dist=loadgroup",
         "--force-sugar",
         "-p",
         "no:cacheprovider",
         "--html=pytest_report/index.html",
         "--durations=10",
-        #"--dist=loadgroup",
         "test/tests",
     ]
 

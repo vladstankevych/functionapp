@@ -56,11 +56,11 @@ def test_tracking_change_in_three_row():
 @pytest.mark.xdist_group(name="delta")
 def test_tracking_change_in_five_row():
     """Tests when a single row has changed."""
-    #spark = get_spark_session()
-    #df = spark.range(100).withColumn("example_data3", sf.rand(seed=42) * 3)
-    #df.write.mode("overwrite").format("delta").saveAsTable("example_table3")
+    spark = get_spark_session()
+    df = spark.range(100).withColumn("example_data3", sf.rand(seed=42) * 3)
+    df.write.mode("overwrite").format("delta").saveAsTable("example_table3")
 
-    #new_df = spark.table("example_table3")
+    new_df = spark.table("example_table3")
     #assert "example_data3" in new_df.schema.fieldNames()
     delta_version = importlib_metadata.version("delta_spark")
     scala_version = "2.12"
@@ -71,9 +71,9 @@ def test_tracking_change_in_five_row():
 @pytest.mark.xdist_group(name="delta")
 def test_init():
     """Tests when a single row has changed."""
-    #spark = get_spark_session()
-    #df = spark.range(100).withColumn("example_data1", sf.rand(seed=42) * 3)
-    #df.write.mode("overwrite").format("delta").saveAsTable("example_table1")
+    spark = get_spark_session()
+    df = spark.range(100).withColumn("example_data1", sf.rand(seed=42) * 3)
+    df.write.mode("overwrite").format("delta").saveAsTable("example_table1")
     delta_version = importlib_metadata.version("delta_spark")
     scala_version = "2.12"
     maven_artifact = f"io.delta:delta-core_{scala_version}:{delta_version}"

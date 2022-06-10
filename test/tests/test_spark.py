@@ -16,7 +16,7 @@ data = [
 def test_weird():
     """Tests when a single row has changed."""
     spark = SparkSession.builder.getOrCreate()
-    df = spark.crveateDataFrame(data)
+    df = spark.createDataFrame(data)
 
     type(df)
     assert "column1" in df.schema.fieldNames()
@@ -24,7 +24,7 @@ def test_weird():
 def test_weird_2():
     """Tests when a single row has changed."""
     spark = SparkSession.builder.getOrCreate()
-    df = spark.crveateDataFrame(data)
+    df = spark.createDataFrame(data)
 
     type(df)
     assert "column1" in df.schema.fieldNames()

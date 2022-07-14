@@ -6,6 +6,7 @@ trigger:
     include:
     - src
     - requirements*.txt
+    - environment*.yml
 
 pr:
   branches:

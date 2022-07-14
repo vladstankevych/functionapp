@@ -4,7 +4,12 @@ on:
   pull_request_target: # will always use the workflow definition from master/main, not your PR!
   push:
     branches:
-      - feature
+    - main
+    paths:
+      - 'notebooks'
+      - 'src'
+      - 'test'
+      - 'requirements*.txt'
 
 jobs:
   checks:

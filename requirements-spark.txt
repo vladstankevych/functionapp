@@ -19,3 +19,4 @@ pyspark==3.2.1
 # Alows using delta tables on local deployments
 delta-spark~=1.2.1
 pytest-spark
+pydantic

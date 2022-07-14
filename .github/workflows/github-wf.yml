@@ -6,9 +6,9 @@ on:
     branches:
     - main
     paths:
-      - 'notebooks'
-      - 'src'
-      - 'test'
+      - 'notebooks/**'
+      - 'src/**'
+      - 'test/**'
       - 'requirements*.txt'
 
 jobs:

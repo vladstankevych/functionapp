@@ -1,4 +1,4 @@
-usage: pytest [options] [file_or_dir] [file_or_dir] [...]
+usage: pytest [options] [file_or_dir] [file_or_dir] [...] 
 
 positional arguments:
   file_or_dir

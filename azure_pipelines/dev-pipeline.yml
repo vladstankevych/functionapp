@@ -18,11 +18,6 @@ variables:
     value: 'ubuntu-latest'
   - name: workingDirectory
     value: '$(System.DefaultWorkingDirectory)/src/cpfr/ecom/azure_functions'
-  - group: ecommerce-dev-variables
-  - group: ecommerce-general-variables
-
-pool:
-  name: $(AgentsPoolName)
 
 stages:
 - stage: Show

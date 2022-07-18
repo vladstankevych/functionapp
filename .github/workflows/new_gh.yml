@@ -4,6 +4,9 @@ on:
   issue_comment:
     types: [created]
 
+env:
+  DATABRICKS_WORKSPACE_URL: "https://adb-4870455567118286.6.azuredatabricks.net"
+
 jobs:
   pr_commented:
     # This job only runs for pull request comments
@@ -120,19 +123,19 @@ jobs:
       with:
         python-version: 3.9
 
-    - name: Login to Azure
-      if: env.databricks_workflow == 'true'
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS_DEV }}
-      
-    - name: Download secrets
-      if: env.databricks_workflow == 'true'
-      uses: gincher/azure-keyvault@v1
-      with:
-        keyVaultName: 'kv-cdh-launchpad-ja-03dv'
-        secretsFilterString: '*'
-
+#    - name: Login to Azure
+#      if: env.databricks_workflow == 'true'
+#      uses: azure/login@v1
+#      with:
+#        creds: ${{ secrets.AZURE_CREDENTIALS_DEV }}
+#      
+#    - name: Download secrets
+#      if: env.databricks_workflow == 'true'
+#      uses: gincher/azure-keyvault@v1
+#      with:
+#        keyVaultName: 'kv-cdh-launchpad-ja-03dv'
+#        secretsFilterString: '*'
+#
     # Runs script for using actions with Databricks Job API 
     - name: Run Databricks Job API action with cpfr-deploy module
       if: env.databricks_workflow == 'true'

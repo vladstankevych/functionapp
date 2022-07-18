@@ -131,7 +131,7 @@ jobs:
       uses: gincher/azure-keyvault@v1
       with:
         keyVaultName: 'kv-cdh-launchpad-ja-03dv'
-        secretsFilter: '*'
+        secretsFilterString: '*'
 
     # Runs script for using actions with Databricks Job API 
     - name: Run Databricks Job API action with cpfr-deploy module

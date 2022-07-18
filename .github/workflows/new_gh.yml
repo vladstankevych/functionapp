@@ -58,38 +58,40 @@ jobs:
 
     - name: Choose an action v2
       run: |
-        echo "invoke=false" >> $GITHUB_ENV
+        echo "invoke_azure_devops_pipeline=false" >> $GITHUB_ENV
+        echo "databricks_workflow=false" >> $GITHUB_ENV
         IFS=' '
         read -a commands_array <<< "${{ github.event.comment.body }}"
         if [[ "${commands_array[0]}" == "databricks" ]]; then
           echo "part=databricks" >> $GITHUB_ENV
           if [[ "${#commands_array[@]}" == 1 ]]; then
             echo "cluster_size=medium" >> $GITHUB_ENV
-            echo "invoke=true" >> $GITHUB_ENV
+            echo "invoke_azure_devops_pipeline=true" >> $GITHUB_ENV
           elif [[ "${commands_array[1]}" == "small" ]]; then
             echo "cluster_size=small" >> $GITHUB_ENV
-            echo "invoke=true" >> $GITHUB_ENV
+            echo "invoke_azure_devops_pipeline=true" >> $GITHUB_ENV
           elif [[ "${commands_array[1]}" == "large" ]]; then
             echo "cluster_size=large" >> $GITHUB_ENV
-            echo "invoke=true" >> $GITHUB_ENV
+            echo "invoke_azure_devops_pipeline=true" >> $GITHUB_ENV
           elif [[ "${commands_array[1]}" == "job" ]]; then
-            echo "AAA"
+            echo "databricks_workflow=true" >> $GITHUB_ENV
           fi
         elif [[ "${commands_array[0]}" == "azure" ]]; then
-          echo "${commands_array[1]}"
+          echo "part=azure_functions" >> $GITHUB_ENV
+          echo "invoke_azure_devops_pipeline=true" >> $GITHUB_ENV
         fi
 
     - uses: actions/checkout@v2
 
     # Install nodejs for script to run Azure Pipeline
     - uses: actions/setup-node@v2
-      if: env.invoke == 'true'
+      if: env.invoke_azure_devops_pipeline == 'true'
       with:
         node-version: '14'
 
 #    # Run script to invoke pipeline
 #    - name: Invoke Azure Pipeline with chosen parameters
-#      if: env.invoke == 'true'
+#      if: env.invoke_azure_devops_pipeline == 'true'
 #      run: |
 #        npm i @actions/core azure-devops-node-api
 #        src_folder="azure_pipelines/config/azure_pipeline_api/src"
@@ -110,3 +112,34 @@ jobs:
 #        sed -i "s|\[AZURE_DEVOPS_TOKEN\]|${{ secrets.AZURE_DEVOPS_TOKEN }}|" $src_folder/task.parameters.js
 #        sed -i "s|\[PIPELINE_INPUT_VARIABLES\]|$input_vars|" $src_folder/task.parameters.js
 #        node $src_folder/main.js
+
+    # Enable Python for running a job
+    - name: Enable Python 3.9
+      if: env.databricks_workflow == 'true'
+      uses: actions/setup-python@v2.2.2
+      with:
+        python-version: 3.9
+
+    - name: Login to Azure
+      if: env.databricks_workflow == 'true'
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS_DEV }}
+      
+    - name: Download secrets
+      if: env.databricks_workflow == 'true'
+      uses: gincher/azure-keyvault@v1
+      with:
+        keyVaultName: 'kv-cdh-launchpad-ja-03dv'
+        secretsFilter: '*'
+
+    # Runs script for using actions with Databricks Job API 
+    - name: Run Databricks Job API action with cpfr-deploy module
+      if: env.databricks_workflow == 'true'
+      run: |
+        set -e
+        python -m pip install --upgrade pip
+        echo "PIP_EXTRA_INDEX_URL=${{ secrets.AZURE_ARTIFACTS_URL }}" >> $GITHUB_ENV
+        pip install pg-ds-cf-cpfr-deploy~=0.2.1
+        env
+

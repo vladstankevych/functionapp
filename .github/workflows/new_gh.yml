@@ -62,6 +62,9 @@ jobs:
         read -a commands_array <<< ${{ github.event.comment.body }}
         if [[ "${commands_array[0]}" == "databricks" ]]; then
           echo "${commands_array[0]} ${commands_array[1]}"
+          echo ${#commands_array[@]}
+          printf '%s\n' "${commands_array[@]}"
+          echo 
         fi
 
 

@@ -72,7 +72,7 @@ jobs:
           elif [[ "${commands_array[1]}" == "large" ]]; then
             echo "cluster_size=large" >> $GITHUB_ENV
             echo "invoke=true" >> $GITHUB_ENV
-          elif [[ "${commands_array[1]" == "job" ]]; then
+          elif [[ "${commands_array[1]}" == "job" ]]; then
             echo "AAA"
           fi
         elif [[ "${commands_array[0]}" == "azure" ]]; then

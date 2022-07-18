@@ -143,6 +143,8 @@ jobs:
         set -e
         python -m pip install --upgrade pip
         echo "PIP_EXTRA_INDEX_URL=${{ secrets.AZURE_ARTIFACTS_URL }}" >> $GITHUB_ENV
+        #pip config set global.extra-index-url "$(PIP_URL)"
+        pip install keyring artifacts-keyring
         pip install pg-ds-cf-cpfr-deploy~=0.2.1
         env
 

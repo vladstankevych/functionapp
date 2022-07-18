@@ -58,15 +58,26 @@ jobs:
 
     - name: Choose an action v2
       run: |
+        echo "invoke=false" >> $GITHUB_ENV
         IFS=' '
         read -a commands_array <<< "${{ github.event.comment.body }}"
         if [[ "${commands_array[0]}" == "databricks" ]]; then
-          echo "${commands_array[0]} ${commands_array[1]}"
-          echo ${#commands_array[@]}
-          printf '%s\n' "${commands_array[@]}"
-          echo 
+          echo "part=databricks" >> $GITHUB_ENV
+          if [[ "${#commands_array[@]}" == 1 ]]; then
+            echo "cluster_size=medium" >> $GITHUB_ENV
+            echo "invoke=true" >> $GITHUB_ENV
+          elif [[ "${commands_array[1]}" == "small" ]]; then
+            echo "cluster_size=small" >> $GITHUB_ENV
+            echo "invoke=true" >> $GITHUB_ENV
+          elif [[ "${commands_array[1]}" == "large" ]]; then
+            echo "cluster_size=large" >> $GITHUB_ENV
+            echo "invoke=true" >> $GITHUB_ENV
+          elif [[ "${commands_array[1]" == "job" ]]; then
+            echo "AAA"
+          fi
+        elif [[ "${commands_array[0]}" == "azure" ]]; then
+          echo "${commands_array[1]}"
         fi
-
 
     - uses: actions/checkout@v2
 
@@ -76,26 +87,26 @@ jobs:
       with:
         node-version: '14'
 
-    # Run script to invoke pipeline
-    - name: Invoke Azure Pipeline with chosen parameters
-      if: env.invoke == 'true'
-      run: |
-        npm i @actions/core azure-devops-node-api
-        src_folder="azure_pipelines/config/azure_pipeline_api/src"
-        input_vars="\"part\": \"$part\""
-        if [ "$part" = "databricks" ]; then
-          input_vars="$input_vars, \"cluster_size\": \"$cluster_size\""
-          if [ "$ms_hosted_agent" = "ubuntu" ]; then
-            input_vars="$input_vars, \"ms_hosted_agent\": \"$ms_hosted_agent\""
-          fi
-        fi
-        input_vars="$input_vars, \"source_branch\": \"${{ fromJson(steps.get_pull_request_ref.outputs.data).head.ref }}\""
-
-        sed -i "s|\[GITHUB_REPOSITORY\]|$GITHUB_REPOSITORY|" $src_folder/pipeline.runner.js
-        sed -i "s|\[GITHUB_BRANCH_REF\]|refs/pull/${{ github.event.issue.number }}/merge|" $src_folder/pipeline.runner.js
-        sed -i "s|\[GITHUB_BRANCH_SHA\]|${{ fromJson(steps.get_pull_request_ref.outputs.data).head.sha }}|" $src_folder/pipeline.runner.js
-        sed -i "s|\[AZ_DEVOPS_PROJECT_URL\]|$AZ_DEVOPS_PROJECT_URL|" $src_folder/task.parameters.js
-        sed -i "s|\[AZ_DEVOPS_PIPELINE_NAME\]|$AZ_DEVOPS_PIPELINE_NAME|" $src_folder/task.parameters.js
-        sed -i "s|\[AZURE_DEVOPS_TOKEN\]|${{ secrets.AZURE_DEVOPS_TOKEN }}|" $src_folder/task.parameters.js
-        sed -i "s|\[PIPELINE_INPUT_VARIABLES\]|$input_vars|" $src_folder/task.parameters.js
-        node $src_folder/main.js
+#    # Run script to invoke pipeline
+#    - name: Invoke Azure Pipeline with chosen parameters
+#      if: env.invoke == 'true'
+#      run: |
+#        npm i @actions/core azure-devops-node-api
+#        src_folder="azure_pipelines/config/azure_pipeline_api/src"
+#        input_vars="\"part\": \"$part\""
+#        if [ "$part" = "databricks" ]; then
+#          input_vars="$input_vars, \"cluster_size\": \"$cluster_size\""
+#          if [ "$ms_hosted_agent" = "ubuntu" ]; then
+#            input_vars="$input_vars, \"ms_hosted_agent\": \"$ms_hosted_agent\""
+#          fi
+#        fi
+#        input_vars="$input_vars, \"source_branch\": \"${{ fromJson(steps.get_pull_request_ref.outputs.data).head.ref }}\""
+#
+#        sed -i "s|\[GITHUB_REPOSITORY\]|$GITHUB_REPOSITORY|" $src_folder/pipeline.runner.js
+#        sed -i "s|\[GITHUB_BRANCH_REF\]|refs/pull/${{ github.event.issue.number }}/merge|" $src_folder/pipeline.runner.js
+#        sed -i "s|\[GITHUB_BRANCH_SHA\]|${{ fromJson(steps.get_pull_request_ref.outputs.data).head.sha }}|" $src_folder/pipeline.runner.js
+#        sed -i "s|\[AZ_DEVOPS_PROJECT_URL\]|$AZ_DEVOPS_PROJECT_URL|" $src_folder/task.parameters.js
+#        sed -i "s|\[AZ_DEVOPS_PIPELINE_NAME\]|$AZ_DEVOPS_PIPELINE_NAME|" $src_folder/task.parameters.js
+#        sed -i "s|\[AZURE_DEVOPS_TOKEN\]|${{ secrets.AZURE_DEVOPS_TOKEN }}|" $src_folder/task.parameters.js
+#        sed -i "s|\[PIPELINE_INPUT_VARIABLES\]|$input_vars|" $src_folder/task.parameters.js
+#        node $src_folder/main.js

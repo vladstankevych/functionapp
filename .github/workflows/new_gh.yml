@@ -5,7 +5,7 @@ on:
     types: [created]
 
 env:
-  DATABRICKS_WORKSPACE_URL: "https://adb-4870455567118286.6.azuredatabricks.net"
+  DATABRICKS_DOMAIN: "https://adb-4870455567118286.6.azuredatabricks.net"
 
 jobs:
   pr_commented:
@@ -146,5 +146,6 @@ jobs:
         #echo "PIP_EXTRA_INDEX_URL=${{ secrets.AZURE_ARTIFACTS_URL }}" >> $GITHUB_ENV
         pip config set global.extra-index-url "${{ secrets.AZURE_ARTIFACTS_URL }}"
         pip install pg-ds-cf-cpfr-deploy~=0.2.1
+        export DATABRICKS_TOKEN="${{ secrets.DATABRICKS_TOKEN_DEV }}"
         env
 

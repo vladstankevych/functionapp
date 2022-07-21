@@ -78,6 +78,7 @@ jobs:
             echo "invoke_azure_devops_pipeline=true" >> $GITHUB_ENV
           elif [[ "${commands_array[1]}" == "job" ]]; then
             echo "databricks_workflow=true" >> $GITHUB_ENV
+            echo "job_name=${commands_array[3]}" >> $GITHUB_ENV
           fi
         elif [[ "${commands_array[0]}" == "azure" ]]; then
           echo "part=azure_functions" >> $GITHUB_ENV
@@ -145,7 +146,9 @@ jobs:
         pip install pip==21.2.4 keyring artifacts-keyring
         #echo "PIP_EXTRA_INDEX_URL=${{ secrets.AZURE_ARTIFACTS_URL }}" >> $GITHUB_ENV
         pip config set global.extra-index-url "${{ secrets.AZURE_ARTIFACTS_URL }}"
-        pip install pg-ds-cf-cpfr-deploy~=0.2.1
+        pip install pg-ds-cf-cpfr-deploy~=0.3.0
         export DATABRICKS_TOKEN="${{ secrets.DATABRICKS_TOKEN_DEV }}"
-        pwd
+        python -c "import sys; from cpfr.deploy.basic_actions import BasicActions;
+        response, run_id = BasicActions().run_workflow(workflow_name=sys.argv[1]);" \
+        "$job_name"        
 

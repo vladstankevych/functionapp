@@ -155,6 +155,12 @@ jobs:
 #        keyVaultName: 'kv-cdh-launchpad-ja-03dv'
 #        secretsFilterString: '*'
 #
+
+    - name: Run Databricks Job API action with cpfr-deploy module
+      run: |
+        set -e
+        env
+
     # Runs script for using actions with Databricks Job API 
     - name: Run Databricks Job API action with cpfr-deploy module
       if: env.databricks_workflow == 'true'

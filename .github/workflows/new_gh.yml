@@ -78,7 +78,7 @@ jobs:
             echo "invoke_azure_devops_pipeline=true" >> $GITHUB_ENV
           elif [[ "${commands_array[1]}" == "job" ]]; then
             echo "databricks_workflow=true" >> $GITHUB_ENV
-            echo "job_name=${commands_array[3]}" >> $GITHUB_ENV
+            echo "job_name=`echo ${{ github.event.comment.body }} | sed "s/^.*run\s//"`" >> $GITHUB_ENV
           fi
         elif [[ "${commands_array[0]}" == "azure" ]]; then
           echo "part=azure_functions" >> $GITHUB_ENV

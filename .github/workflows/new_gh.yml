@@ -102,7 +102,6 @@ jobs:
           echo "part=azure_functions" >> $GITHUB_ENV
           echo "invoke_azure_devops_pipeline=true" >> $GITHUB_ENV
         fi
-        env
 
     - uses: actions/checkout@v2
 
@@ -161,6 +160,7 @@ jobs:
       if: env.databricks_workflow == 'true'
       run: |
         set -e
+        env
         pip install pip==21.2.4 keyring artifacts-keyring
         pip config set global.extra-index-url "${{ secrets.AZURE_ARTIFACTS_URL }}"
         pip install pg-ds-cf-cpfr-deploy~=0.3.0

@@ -166,7 +166,7 @@ jobs:
         pip config set global.extra-index-url "${{ secrets.AZURE_ARTIFACTS_URL }}"
         pip install pg-ds-cf-cpfr-deploy~=0.3.0
         export DATABRICKS_TOKEN="${{ secrets.DATABRICKS_TOKEN_DEV }}"
-        echo "$job"
-        echo "$job_id"
+        echo "ID: $job"
+        echo "IS_ID: $job_id"
         python .github/scripts/run_workflow.py "$job" "$job_id"
 

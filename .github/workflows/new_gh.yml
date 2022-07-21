@@ -69,13 +69,15 @@ jobs:
         if [[ "${commands_array[0]}" == "databricks" ]]; then
           echo "part=databricks" >> $GITHUB_ENV
           if [[ "${#commands_array[@]}" == 1 ]]; then
-            echo "cluster_size=medium" >> $GITHUB_ENV
             echo "invoke_azure_devops_pipeline=true" >> $GITHUB_ENV
           elif [[ "${commands_array[1]}" == "small" ]]; then
             echo "cluster_size=small" >> $GITHUB_ENV
             echo "invoke_azure_devops_pipeline=true" >> $GITHUB_ENV
           elif [[ "${commands_array[1]}" == "large" ]]; then
             echo "cluster_size=large" >> $GITHUB_ENV
+            echo "invoke_azure_devops_pipeline=true" >> $GITHUB_ENV
+          elif [[ "${commands_array[1]" == "requirements-update" ]]; then
+            echo "ms_hosted_agent=ubuntu" >> $GITHUB_ENV
             echo "invoke_azure_devops_pipeline=true" >> $GITHUB_ENV
           elif [[ "${commands_array[1]}" == "job" ]]; then
             echo "databricks_workflow=true" >> $GITHUB_ENV
@@ -100,6 +102,8 @@ jobs:
           fi
         elif [[ "${commands_array[0]}" == "azure" && "${commands_array[1]}" == functions ]]; then
           echo "part=azure_functions" >> $GITHUB_ENV
+          echo "invoke_azure_devops_pipeline=true" >> $GITHUB_ENV
+        elif [[ "${commands_array[0]}" == "run" && "${commands_array[1]}" == "all" ]]; then
           echo "invoke_azure_devops_pipeline=true" >> $GITHUB_ENV
         fi
 

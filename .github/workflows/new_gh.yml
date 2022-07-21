@@ -173,7 +173,7 @@ jobs:
         env
         pip install pip==21.2.4 keyring artifacts-keyring
         pip config set global.extra-index-url "${{ secrets.AZURE_ARTIFACTS_URL }}"
-        pip install pg-ds-cf-cpfr-deploy~=0.3.0
+        pip install pg-ds-cf-cpfr-deploy~=0.3.1
         export DATABRICKS_TOKEN="${{ secrets.DATABRICKS_TOKEN_DEV }}"
         echo "ID: $job"
         echo "IS_ID: $job_id"

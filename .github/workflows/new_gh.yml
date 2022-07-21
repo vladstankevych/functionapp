@@ -167,5 +167,5 @@ jobs:
         export DATABRICKS_TOKEN="${{ secrets.DATABRICKS_TOKEN_DEV }}"
         echo "ID: $job"
         echo "IS_ID: $job_id"
-        python .github/scripts/run_workflow.py "$job" "$job_id"
+        python .github/scripts/run_workflow.py "$job" $job_id
 

@@ -163,7 +163,10 @@ jobs:
     - name: Run Databricks Job API action with cpfr-deploy module
       run: |
         set -e
-        env
+        if [[ "$cluster_size" == "large" || "$cluster_size" == "small" ]]; then
+          echo "lol"
+        fi
+        echo "This is cluster size: $cluster_size"
 
     # Runs script for using actions with Databricks Job API 
     - name: Run Databricks Job API action with cpfr-deploy module

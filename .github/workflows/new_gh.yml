@@ -102,7 +102,7 @@ jobs:
           echo "part=azure_functions" >> $GITHUB_ENV
           echo "invoke_azure_devops_pipeline=true" >> $GITHUB_ENV
         fi
-        echo $GITHUB_ENV
+        echo env
 
     - uses: actions/checkout@v2
 

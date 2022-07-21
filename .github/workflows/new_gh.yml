@@ -76,7 +76,7 @@ jobs:
           elif [[ "${commands_array[1]}" == "large" ]]; then
             echo "cluster_size=large" >> $GITHUB_ENV
             echo "invoke_azure_devops_pipeline=true" >> $GITHUB_ENV
-          elif [[ "${commands_array[1]" == "requirements-update" ]]; then
+          elif [[ "${commands_array[1]}" == "requirements-update" ]]; then
             echo "ms_hosted_agent=ubuntu" >> $GITHUB_ENV
             echo "invoke_azure_devops_pipeline=true" >> $GITHUB_ENV
           elif [[ "${commands_array[1]}" == "job" ]]; then
@@ -100,7 +100,7 @@ jobs:
             echo "Invalid command."
             exit 1
           fi
-        elif [[ "${commands_array[0]}" == "azure" && "${commands_array[1]}" == functions ]]; then
+        elif [[ "${commands_array[0]}" == "azure" && "${commands_array[1]}" == "functions" ]]; then
           echo "part=azure_functions" >> $GITHUB_ENV
           echo "invoke_azure_devops_pipeline=true" >> $GITHUB_ENV
         elif [[ "${commands_array[0]}" == "run" && "${commands_array[1]}" == "all" ]]; then

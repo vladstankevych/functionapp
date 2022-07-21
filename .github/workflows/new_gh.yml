@@ -98,10 +98,11 @@ jobs:
             echo "Invalid command."
             exit 1
           fi
-        elif [[ "${commands_array[0]}" == "azure" ]]; then
+        elif [[ "${commands_array[0]}" == "azure" && "${commands_array[1]}" == functions ]]; then
           echo "part=azure_functions" >> $GITHUB_ENV
           echo "invoke_azure_devops_pipeline=true" >> $GITHUB_ENV
         fi
+        echo $GITHUB_ENV
 
     - uses: actions/checkout@v2
 
@@ -160,9 +161,7 @@ jobs:
       if: env.databricks_workflow == 'true'
       run: |
         set -e
-        #python -m pip install --upgrade pip
         pip install pip==21.2.4 keyring artifacts-keyring
-        #echo "PIP_EXTRA_INDEX_URL=${{ secrets.AZURE_ARTIFACTS_URL }}" >> $GITHUB_ENV
         pip config set global.extra-index-url "${{ secrets.AZURE_ARTIFACTS_URL }}"
         pip install pg-ds-cf-cpfr-deploy~=0.3.0
         export DATABRICKS_TOKEN="${{ secrets.DATABRICKS_TOKEN_DEV }}"

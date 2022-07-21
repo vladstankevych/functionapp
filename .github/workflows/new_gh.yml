@@ -163,7 +163,7 @@ jobs:
     - name: Run Databricks Job API action with cpfr-deploy module
       run: |
         set -e
-        if [[ "$cluster_size" == "large" || "$cluster_size" == "small" ]]; then
+        if [ ! -z "$cluster_size" ]; then
           echo "lol"
         fi
         echo "This is cluster size: $cluster_size"

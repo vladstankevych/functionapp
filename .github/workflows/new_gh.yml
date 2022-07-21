@@ -61,6 +61,7 @@ jobs:
 
     - name: Choose an action v2
       run: |
+        set -e
         echo "invoke_azure_devops_pipeline=false" >> $GITHUB_ENV
         echo "databricks_workflow=false" >> $GITHUB_ENV
         IFS=' '
@@ -78,7 +79,24 @@ jobs:
             echo "invoke_azure_devops_pipeline=true" >> $GITHUB_ENV
           elif [[ "${commands_array[1]}" == "job" ]]; then
             echo "databricks_workflow=true" >> $GITHUB_ENV
-            echo "job_name=`echo ${{ github.event.comment.body }} | sed "s/^.*run\s//"`" >> $GITHUB_ENV
+            if [[ "${#commands_array[@]}" > 3 && "${commands_array[2]}" == "run" ]]; then
+              echo "job_id=false" >> $GITHUB_ENV
+              if [[ "${#commands_array[@]}" == 5 && "${commands_array[3]}" == "id" ]]; then
+                echo "job_id=true" >> $GITHUB_ENV
+                echo "job=${commands_array[4]}"
+              elif [[ "${#commands_array[@]}" == 4 && "${commands_array[3]}" == id=* ]]; then
+                echo "job_id=true" >> $GITHUB_ENV
+                echo "job=`echo ${commands_array[3]} | cut -d= -f2`"
+              else
+                echo "job=`echo ${{ github.event.comment.body }} | sed "s/^.*run\s//"`" >> $GITHUB_ENV
+              fi
+            else
+              echo "Invalid command: not enough arguments."
+              exit 1
+            fi
+          else
+            echo "Invalid command."
+            exit 1
           fi
         elif [[ "${commands_array[0]}" == "azure" ]]; then
           echo "part=azure_functions" >> $GITHUB_ENV

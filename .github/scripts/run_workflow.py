@@ -3,8 +3,8 @@ from cpfr.deploy.basic_actions import BasicActions
 
 for i in sys.argv:
     print(i)
-    
-if not sys.argv[2]:
+
+if sys.argv[2] == "false":
     response, run_id = BasicActions().run_workflow(workflow_name=sys.argv[1])
 else:
     response, run_id = BasicActions().run_workflow(job_id=sys.argv[1])

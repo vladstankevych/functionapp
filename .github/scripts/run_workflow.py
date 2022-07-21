@@ -1,6 +1,9 @@
 import sys
 from cpfr.deploy.basic_actions import BasicActions
 
+for i in sys.argv:
+    print(i)
+    
 if not sys.argv[2]:
     response, run_id = BasicActions().run_workflow(workflow_name=sys.argv[1])
 else:

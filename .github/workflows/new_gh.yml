@@ -176,7 +176,7 @@ jobs:
         env
         pip install pip==21.2.4 keyring artifacts-keyring
         #pip config set global.extra-index-url "${{ secrets.AZURE_ARTIFACTS_URL }}"
-        echo "PIP_EXTRA_INDEX_URL=${{ secrets.AZURE_ARTIFACTS_URL }}" >> $GITHUB_ENV
+        export PIP_EXTRA_INDEX_URL=${{ secrets.AZURE_ARTIFACTS_URL }}
         pip install -r requirements-deploy.txt
         export DATABRICKS_TOKEN="${{ secrets.DATABRICKS_TOKEN_DEV }}"
         echo "ID: $job"

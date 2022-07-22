@@ -83,15 +83,13 @@ jobs:
             echo "databricks_workflow=true" >> $GITHUB_ENV
             if [[ "${#commands_array[@]}" > 3 && "${commands_array[2]}" == "run" ]]; then
               echo "job_id=false" >> $GITHUB_ENV
-              if [[ ${#commands_array[@]} == 5 && "${commands_array[3]}" == "id" ]]; then
+              echo "job=`echo ${{ github.event.comment.body }} | sed "s/^.*run\s//"`" >> $GITHUB_ENV
+            elif [[ ${#commands_array[@]} == 4 && "${commands_array[3]}" == "run_id" ]]; then
                 echo "job_id=true" >> $GITHUB_ENV
-                echo "job=${commands_array[4]}" >> $GITHUB_ENV
-              elif [[ ${#commands_array[@]} == 4 && "${commands_array[3]}" == id=* ]]; then
+                echo "job=${commands_array[3]}" >> $GITHUB_ENV
+            elif [[ ${#commands_array[@]} == 3 && "${commands_array[2]}" == run_id=* ]]; then
                 echo "job_id=true" >> $GITHUB_ENV
-                echo "job=`echo ${commands_array[3]} | cut -d= -f2`" >> $GITHUB_ENV
-              else
-                echo "job=`echo ${{ github.event.comment.body }} | sed "s/^.*run\s//"`" >> $GITHUB_ENV
-              fi
+                echo "job=`echo ${commands_array[2]} | cut -d= -f2`" >> $GITHUB_ENV
             else
               echo "Invalid command: not enough arguments."
               exit 1

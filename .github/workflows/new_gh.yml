@@ -176,9 +176,8 @@ jobs:
         env
         pip install pip==21.2.4 keyring artifacts-keyring
         pip config set global.extra-index-url "${{ secrets.AZURE_ARTIFACTS_URL }}"
-        pip install pg-ds-cf-cpfr-deploy~=0.3.1
+        pip install -r requirements-deploy.txt
         export DATABRICKS_TOKEN="${{ secrets.DATABRICKS_TOKEN_DEV }}"
         echo "ID: $job"
         echo "IS_ID: $job_id"
         python .github/scripts/run_workflow.py "$job" $job_id
-

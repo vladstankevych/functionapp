@@ -27,6 +27,9 @@ jobs:
         inlineScript: |
           az account show
           az storage -h
+          zip -r deployment.zip ./func
+          az functionapp deployment source config-zip -g NetworkWatcherRG -n nastiahos --src ./deployment.zip
+
 
     - name: Setup Python ${{ env.PYTHON_VERSION }} Environment
       uses: actions/setup-python@v1

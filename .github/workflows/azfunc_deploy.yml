@@ -30,7 +30,7 @@ jobs:
           zip -r deployment.zip ./func
           az functionapp config appsettings delete -n nastiahos -g NetworkWatcherRG --setting-names { "WEBSITE_RUN_FROM_PACKAGE" }
           az functionapp config appsettings set -n nastiahos -g NetworkWatcherRG --settings "SCM_DO_BUILD_DURING_DEPLOYMENT=1"
-          az functionapp deployment source config-zip -g NetworkWatcherRG -n nastiahos --src ./deployment.zip
+          az functionapp deployment source config-zip -g NetworkWatcherRG -n nastiahos --build-remote true --src ./deployment.zip
 
 
     - name: Setup Python ${{ env.PYTHON_VERSION }} Environment

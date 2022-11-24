@@ -32,22 +32,21 @@ jobs:
           az functionapp config appsettings set -n nastiahos -g NetworkWatcherRG --settings "SCM_DO_BUILD_DURING_DEPLOYMENT=1"
           az functionapp deployment source config-zip -g NetworkWatcherRG -n nastiahos --build-remote true --src ./deployment.zip
 
-
-    - name: Setup Python ${{ env.PYTHON_VERSION }} Environment
-      uses: actions/setup-python@v1
-      with:
-        python-version: ${{ env.PYTHON_VERSION }}
-
-    - name: 'Resolve Project Dependencies Using Pip'
-      shell: bash
-      run: |
-        pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt --target=".python_packages/lib/site-packages"
-        popd
-    - name: 'Run Azure Functions action'
-      uses: Azure/functions-action@v1
-      with:
-        app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-        package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-        publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+#    - name: Setup Python ${{ env.PYTHON_VERSION }} Environment
+#      uses: actions/setup-python@v1
+#      with:
+#        python-version: ${{ env.PYTHON_VERSION }}
+#
+#    - name: 'Resolve Project Dependencies Using Pip'
+#      shell: bash
+#      run: |
+#        pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+#        python -m pip install --upgrade pip
+#        pip install -r requirements.txt --target=".python_packages/lib/site-packages"
+#        popd
+#    - name: 'Run Azure Functions action'
+#      uses: Azure/functions-action@v1
+#      with:
+#        app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+#        package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+#        publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}

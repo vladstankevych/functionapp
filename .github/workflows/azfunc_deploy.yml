@@ -38,8 +38,14 @@ jobs:
         images: name/app
         tags: type=raw, value={{sha}}
 
-    - name: Set LOCAL_IMG env var
-      run: echo "LOCAL_IMG=${{ env.IMAGE_NAME }}:${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
+    - name: Set LOCAL_IMG env var (PR)
+      if: ${{ github.event_name == 'pull_request_target' }}
+      run: |
+        echo "LOCAL_IMG=${{ env.ACR_URL }}/${{ env.IMAGE_NAME }}:sha-${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
+    - name: Set LOCAL_IMG env var (not PR)
+      if: ${{ github.event_name != 'pull_request_target' }}
+      run: |
+        echo "LOCAL_IMG=${{ env.ACR_URL }}/${{ env.IMAGE_NAME }}:sha-${{ env.GITHUB_SHA }}" >> $GITHUB_ENV
 
     # Build and push
     - name: Build & Push images to CRs

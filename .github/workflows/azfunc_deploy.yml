@@ -1,7 +1,9 @@
 name: Deploy Python project to function app
 
 on:
-  [push]
+  issue_comment:
+    types:
+      - created
 
 env:
   AZURE_FUNCTIONAPP_NAME: nastiahos # set this to your application's name
@@ -14,6 +16,22 @@ jobs:
     steps:
     - name: 'Checkout GitHub action'
       uses: actions/checkout@v2
+
+    - name: Export somethin
+      shell: bash
+      run: |
+        export PYTHON_VERSION=${{ env.PYTHON_VERSION }}
+    
+    - name: Docker meta
+      uses: docker/metadata-action@v4
+      id: meta
+      with:
+        images: name/app
+        tags: type=raw, value={{sha}}
+
+    - name: Set LOCAL_IMG env var
+      run: |
+        echo ${{ steps.local-meta.outputs.tags }}
 
     - name: Azure Login
       uses: azure/login@v1
@@ -38,8 +56,8 @@ jobs:
           pip install -r requirements.txt --target=".python_packages/lib/site-packages"
           zip -r $current_path/deployment.zip *
           popd
-          az functionapp config appsettings delete -n nastiahos -g NetworkWatcherRG --setting-names { "WEBSITE_RUN_FROM_PACKAGE" }
-          az functionapp config appsettings set -n nastiahos -g NetworkWatcherRG --settings "SCM_DO_BUILD_DURING_DEPLOYMENT=1"
+          #az functionapp config appsettings delete -n nastiahos -g NetworkWatcherRG --setting-names { "WEBSITE_RUN_FROM_PACKAGE" }
+          #az functionapp config appsettings set -n nastiahos -g NetworkWatcherRG --settings "SCM_DO_BUILD_DURING_DEPLOYMENT=1"
           az functionapp deployment source config-zip -g NetworkWatcherRG -n nastiahos --src deployment.zip
 #
 #    - name: 'Resolve Project Dependencies Using Pip'

@@ -32,7 +32,7 @@ jobs:
 
     - name: Set LOCAL_IMG env var
       run: |
-        echo ${{ steps.local-meta.outputs.tags }}
+        echo ${{ steps.meta.outputs.tags }}
 
     # Build and push
     - name: Build & Push images to CRs
@@ -40,12 +40,10 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${{ steps.docker-meta.outputs.tags }}, ${{ env.IMAGE_NAME }}:${{ github.event.pull_request.head.sha }}
+        tags: ${{ steps.meta.outputs.tags }}, ${{ env.IMAGE_NAME }}:${{ github.event.pull_request.head.sha }}
         labels: ${{ steps.docker-meta.outputs.labels }}
         # Docs: https://docs.docker.com/build/building/cache/backends/gha/#using-dockerbuild-push-action
         # Docs: https://docs.docker.com/build/ci/github-actions/examples/#cache-backend-api
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
 
     - name: Azure Login
       uses: azure/login@v1

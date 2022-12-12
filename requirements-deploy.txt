@@ -1,0 +1,3 @@
+# Latest CPFR Deploy library
+
+pg-ds-cf-cpfr-deploy~=0.3.1

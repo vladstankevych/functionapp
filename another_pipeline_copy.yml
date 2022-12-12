@@ -1,0 +1,26 @@
+trigger: none
+
+pr: none
+
+variables:
+  vmImageName: 'ubuntu-latest'
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+- stage: First
+  displayName: Stage
+  dependsOn: []
+  jobs:
+  - job: First_job
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - task: Bash@3
+      displayName: "Create or Get cluster"
+      inputs:
+        targetType: inline
+        script: |
+          echo $(source_branch)
+          echo "that's correct"

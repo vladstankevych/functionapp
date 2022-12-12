@@ -1,0 +1,6 @@
+# Extra requirements for orchestration
+
+# PyODBC can cause some issues, see:
+# https://github.com/procter-gamble/ds-cf-ecpfr/pull/22/files#r745837084
+pyodbc==4.0.30
+pydantic

@@ -1,0 +1,182 @@
+name: Run databricks deployment
+
+on:
+  issue_comment:
+    types: [created]
+
+env:
+  DATABRICKS_DOMAIN: "https://adb-4870455567118286.6.azuredatabricks.net"
+
+jobs:
+  pr_commented:
+    # This job only runs for pull request comments
+    name: PR comment
+    if: ${{ github.event.issue.pull_request }}
+    runs-on: ubuntu-latest
+    steps:
+    # Do not remove: useful for debug purposes
+    - name: Dump event JSON and environment
+      run: cat "$GITHUB_EVENT_PATH"; env
+
+    # Get info about source branch of PR 
+    # (because by default it's absent in github context when triggered by "issue_comment")
+    - name: Get PR ref and sha
+      id: get_pull_request_ref
+      uses: octokit/request-action@v2.x
+      with:
+        route: GET /repos/:repository/pulls/:issue_id
+        repository: ${{ github.repository }}
+        issue_id: ${{ github.event.issue.number }}
+      env:
+        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+#    # Depending on the comment body set corresponding variables
+#    - name: Choose an action
+#      run: |
+#        if [[ "${{ github.event.comment.body }}" == "databricks small" ]]; then
+#          echo "cluster_size=small" >> $GITHUB_ENV
+#          echo "part=databricks" >> $GITHUB_ENV
+#          echo "invoke=true" >> $GITHUB_ENV
+#        elif [[ "${{ github.event.comment.body }}" == "databricks" ]]; then
+#          echo "cluster_size=medium" >> $GITHUB_ENV
+#          echo "part=databricks" >> $GITHUB_ENV
+#          echo "invoke=true" >> $GITHUB_ENV
+#        elif [[ "${{ github.event.comment.body }}" == "databricks large" ]]; then
+#          echo "cluster_size=large" >> $GITHUB_ENV
+#          echo "part=databricks" >> $GITHUB_ENV
+#          echo "invoke=true" >> $GITHUB_ENV
+#        elif [[ "${{ github.event.comment.body }}" == "databricks requirements-update" ]]; then
+#          echo "cluster_size=medium" >> $GITHUB_ENV
+#          echo "part=databricks" >> $GITHUB_ENV
+#          echo "ms_hosted_agent=ubuntu" >> $GITHUB_ENV
+#          echo "invoke=true" >> $GITHUB_ENV
+#        elif [[ "${{ github.event.comment.body }}" == "azure functions" ]]; then
+#          echo "part=azure_functions" >> $GITHUB_ENV
+#          echo "invoke=true" >> $GITHUB_ENV
+#        elif [[ "${{ github.event.comment.body }}" == "run all" ]]; then
+#          echo "invoke=true" >> $GITHUB_ENV
+#        else 
+#          echo "invoke=false" >> $GITHUB_ENV
+#        fi
+
+    - name: Choose an action v2
+      run: |
+        set -e
+        echo "invoke_azure_devops_pipeline=false" >> $GITHUB_ENV
+        echo "databricks_workflow=false" >> $GITHUB_ENV
+        IFS=' '
+        read -a commands_array <<< "${{ github.event.comment.body }}"
+        if [[ "${commands_array[0]}" == "databricks" ]]; then
+          echo "part=databricks" >> $GITHUB_ENV
+          if [[ "${#commands_array[@]}" == 1 ]]; then
+            echo "invoke_azure_devops_pipeline=true" >> $GITHUB_ENV
+          elif [[ "${commands_array[1]}" == "small" ]]; then
+            echo "cluster_size=small" >> $GITHUB_ENV
+            echo "invoke_azure_devops_pipeline=true" >> $GITHUB_ENV
+          elif [[ "${commands_array[1]}" == "large" ]]; then
+            echo "cluster_size=large" >> $GITHUB_ENV
+            echo "invoke_azure_devops_pipeline=true" >> $GITHUB_ENV
+          elif [[ "${commands_array[1]}" == "requirements-update" ]]; then
+            echo "ms_hosted_agent=ubuntu" >> $GITHUB_ENV
+            echo "invoke_azure_devops_pipeline=true" >> $GITHUB_ENV
+          elif [[ "${commands_array[1]}" == "job" ]]; then
+            echo "databricks_workflow=true" >> $GITHUB_ENV
+            if [[ "${#commands_array[@]}" > 3 && "${commands_array[2]}" == "run" ]]; then
+              echo "job_id=false" >> $GITHUB_ENV
+              echo "job=`echo ${{ github.event.comment.body }} | sed "s/^.*run\s//"`" >> $GITHUB_ENV
+            elif [[ ${#commands_array[@]} == 4 && "${commands_array[3]}" == "run_id" ]]; then
+                echo "job_id=true" >> $GITHUB_ENV
+                echo "job=${commands_array[3]}" >> $GITHUB_ENV
+            elif [[ ${#commands_array[@]} == 3 && "${commands_array[2]}" == run_id=* ]]; then
+                echo "job_id=true" >> $GITHUB_ENV
+                echo "job=`echo ${commands_array[2]} | cut -d= -f2`" >> $GITHUB_ENV
+            else
+              echo "Invalid command: not enough arguments."
+              exit 1
+            fi
+          else
+            echo "Invalid command."
+            exit 1
+          fi
+        elif [[ "${commands_array[0]}" == "azure" && "${commands_array[1]}" == "functions" ]]; then
+          echo "part=azure_functions" >> $GITHUB_ENV
+          echo "invoke_azure_devops_pipeline=true" >> $GITHUB_ENV
+        elif [[ "${commands_array[0]}" == "run" && "${commands_array[1]}" == "all" ]]; then
+          echo "invoke_azure_devops_pipeline=true" >> $GITHUB_ENV
+        fi
+
+    - uses: actions/checkout@v2
+
+    # Install nodejs for script to run Azure Pipeline
+    - uses: actions/setup-node@v2
+      if: env.invoke_azure_devops_pipeline == 'true'
+      with:
+        node-version: '14'
+
+#    # Run script to invoke pipeline
+#    - name: Invoke Azure Pipeline with chosen parameters
+#      if: env.invoke_azure_devops_pipeline == 'true'
+#      run: |
+#        npm i @actions/core azure-devops-node-api
+#        src_folder="azure_pipelines/config/azure_pipeline_api/src"
+#        input_vars="\"part\": \"$part\""
+#        if [ "$part" = "databricks" ]; then
+#          input_vars="$input_vars, \"cluster_size\": \"$cluster_size\""
+#          if [ "$ms_hosted_agent" = "ubuntu" ]; then
+#            input_vars="$input_vars, \"ms_hosted_agent\": \"$ms_hosted_agent\""
+#          fi
+#        fi
+#        input_vars="$input_vars, \"source_branch\": \"${{ fromJson(steps.get_pull_request_ref.outputs.data).head.ref }}\""
+#
+#        sed -i "s|\[GITHUB_REPOSITORY\]|$GITHUB_REPOSITORY|" $src_folder/pipeline.runner.js
+#        sed -i "s|\[GITHUB_BRANCH_REF\]|refs/pull/${{ github.event.issue.number }}/merge|" $src_folder/pipeline.runner.js
+#        sed -i "s|\[GITHUB_BRANCH_SHA\]|${{ fromJson(steps.get_pull_request_ref.outputs.data).head.sha }}|" $src_folder/pipeline.runner.js
+#        sed -i "s|\[AZ_DEVOPS_PROJECT_URL\]|$AZ_DEVOPS_PROJECT_URL|" $src_folder/task.parameters.js
+#        sed -i "s|\[AZ_DEVOPS_PIPELINE_NAME\]|$AZ_DEVOPS_PIPELINE_NAME|" $src_folder/task.parameters.js
+#        sed -i "s|\[AZURE_DEVOPS_TOKEN\]|${{ secrets.AZURE_DEVOPS_TOKEN }}|" $src_folder/task.parameters.js
+#        sed -i "s|\[PIPELINE_INPUT_VARIABLES\]|$input_vars|" $src_folder/task.parameters.js
+#        node $src_folder/main.js
+
+    # Enable Python for running a job
+    - name: Enable Python 3.9
+      if: env.databricks_workflow == 'true'
+      uses: actions/setup-python@v2.2.2
+      with:
+        python-version: 3.9
+
+#    - name: Login to Azure
+#      if: env.databricks_workflow == 'true'
+#      uses: azure/login@v1
+#      with:
+#        creds: ${{ secrets.AZURE_CREDENTIALS_DEV }}
+#      
+#    - name: Download secrets
+#      if: env.databricks_workflow == 'true'
+#      uses: gincher/azure-keyvault@v1
+#      with:
+#        keyVaultName: 'kv-cdh-launchpad-ja-03dv'
+#        secretsFilterString: '*'
+#
+
+    - name: Run Databricks Job API action with cpfr-deploy module
+      run: |
+        set -e
+        if [ ! -z "$cluster_size" ]; then
+          echo "lol"
+        fi
+        echo "This is cluster size: $cluster_size"
+
+    # Runs script for using actions with Databricks Job API 
+    - name: Run Databricks Job API action with cpfr-deploy module
+      if: env.databricks_workflow == 'true'
+      run: |
+        set -e
+        env
+        pip install pip==21.2.4 keyring artifacts-keyring
+        #pip config set global.extra-index-url "${{ secrets.AZURE_ARTIFACTS_URL }}"
+        export PIP_EXTRA_INDEX_URL=${{ secrets.AZURE_ARTIFACTS_URL }}
+        pip install -r requirements-deploy.txt
+        export DATABRICKS_TOKEN="${{ secrets.DATABRICKS_TOKEN_DEV }}"
+        echo "ID: $job"
+        echo "IS_ID: $job_id"
+        python .github/scripts/run_workflow.py "$job" $job_id

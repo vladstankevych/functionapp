@@ -14,8 +14,8 @@ jobs:
   azure_functions_deploy:
     runs-on: ubuntu-latest
     steps:
-    - name: 'Checkout GitHub action'
-      uses: actions/checkout@v2
+    #- name: 'Checkout GitHub action'
+    #  uses: actions/checkout@v2
 
     - name: Export somethin
       shell: bash

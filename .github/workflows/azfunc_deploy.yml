@@ -31,8 +31,7 @@ jobs:
         tags: type=raw, value={{sha}}
 
     - name: Set LOCAL_IMG env var
-      run: |
-        echo ${{ steps.meta.outputs.tags }}
+      run: echo "LOCAL_IMG=${{ env.IMAGE_NAME }}:${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
 
     # Build and push
     - name: Build & Push images to CRs
@@ -40,7 +39,7 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${{ steps.meta.outputs.tags }}, ${{ env.IMAGE_NAME }}:${{ github.event.pull_request.head.sha }}
+        tags: ${{ steps.meta.outputs.tags }}, ${{ env.LOCAL_IMG }}
         labels: ${{ steps.docker-meta.outputs.labels }}
         # Docs: https://docs.docker.com/build/building/cache/backends/gha/#using-dockerbuild-push-action
         # Docs: https://docs.docker.com/build/ci/github-actions/examples/#cache-backend-api

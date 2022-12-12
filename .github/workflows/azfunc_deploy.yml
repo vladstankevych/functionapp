@@ -1,9 +1,16 @@
 name: Deploy Python project to function app
 
 on:
-  issue_comment:
+  pull_request_target:
+    branches:
+    - main
+  push:
+    branches:
+      - main
+  release: # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#release
     types:
-      - created
+      - published
+    
 
 env:
   AZURE_FUNCTIONAPP_NAME: nastiahos # set this to your application's name

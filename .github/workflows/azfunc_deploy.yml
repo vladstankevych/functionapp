@@ -25,6 +25,23 @@ jobs:
     #- name: 'Checkout GitHub action'
     #  uses: actions/checkout@v2
 
+    - name: Get PR SHA
+      id: sha
+      uses: actions/github-script@v4
+      with:
+        result-encoding: string
+        script: |
+          const { owner, repo, number } = context.issue;
+          const pr = await github.pulls.get({
+            owner,
+            repo,
+            pull_number: number,
+          });
+          return pr.data.head.sha 
+  
+    - name: Echo sha
+      shell: bash
+      run: echo ${{ steps.sha.outputs.result }}
     - name: Export somethin
       shell: bash
       run: |

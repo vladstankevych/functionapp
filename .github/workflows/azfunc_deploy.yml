@@ -1,0 +1,101 @@
+name: Deploy Python project to function app
+
+on:
+  pull_request_target:
+    branches:
+    - main
+  push:
+    branches:
+      - main
+  release: # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#release
+    types:
+      - published
+    
+
+env:
+  AZURE_FUNCTIONAPP_NAME: nastiahos # set this to your application's name
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: './func'   # set this to the path to your web app project, defaults to the repository root
+  PYTHON_VERSION: '3.9'   
+  IMAGE_NAME: "name/app"
+
+jobs:
+  azure_functions_deploy:
+    runs-on: ubuntu-latest
+    steps:
+    #- name: 'Checkout GitHub action'
+    #  uses: actions/checkout@v2
+
+    - name: Export somethin
+      shell: bash
+      run: |
+        export PYTHON_VERSION=${{ env.PYTHON_VERSION }}
+        echo ${{ github.event_name }}
+    
+    - name: Docker meta
+      uses: docker/metadata-action@v4
+      id: meta
+      with:
+        images: name/app
+        tags: type=raw, value={{sha}}
+
+    - name: Set LOCAL_IMG env var (PR)
+      if: ${{ github.event_name == 'pull_request_target' }}
+      run: |
+        echo "LOCAL_IMG=${{ env.ACR_URL }}/${{ env.IMAGE_NAME }}:sha-${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
+    - name: Set LOCAL_IMG env var (not PR)
+      if: ${{ github.event_name != 'pull_request_target' }}
+      run: |
+        echo "LOCAL_IMG=${{ env.ACR_URL }}/${{ env.IMAGE_NAME }}:sha-${{ github.sha }}" >> $GITHUB_ENV
+
+    # Build and push
+    - name: Build & Push images to CRs
+      uses: docker/build-push-action@v3
+      with:
+        context: .
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}, ${{ env.LOCAL_IMG }}
+        labels: ${{ steps.docker-meta.outputs.labels }}
+        # Docs: https://docs.docker.com/build/building/cache/backends/gha/#using-dockerbuild-push-action
+        # Docs: https://docs.docker.com/build/ci/github-actions/examples/#cache-backend-api
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Setup Python ${{ env.PYTHON_VERSION }} Environment
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Azure CLI script
+      uses: azure/CLI@v1
+      with:
+        azcliversion: 2.30.0
+        inlineScript: |
+          az account show
+          az storage -h
+          current_path=$(pwd)
+          pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt --target=".python_packages/lib/site-packages"
+          zip -r $current_path/deployment.zip *
+          popd
+          #az functionapp config appsettings delete -n nastiahos -g NetworkWatcherRG --setting-names { "WEBSITE_RUN_FROM_PACKAGE" }
+          #az functionapp config appsettings set -n nastiahos -g NetworkWatcherRG --settings "SCM_DO_BUILD_DURING_DEPLOYMENT=1"
+          az functionapp deployment source config-zip -g NetworkWatcherRG -n nastiahos --src deployment.zip
+#
+#    - name: 'Resolve Project Dependencies Using Pip'
+#      shell: bash
+#      run: |
+#        pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+#        python -m pip install --upgrade pip
+#        pip install -r requirements.txt --target=".python_packages/lib/site-packages"
+#        popd
+
+#    - name: 'Run Azure Functions action'
+#      uses: Azure/functions-action@v1
+#      with:
+#        app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+#        package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+#        publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}

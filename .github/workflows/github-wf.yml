@@ -1,0 +1,66 @@
+name: Test
+
+on:
+  pull_request_target: # will always use the workflow definition from master/main, not your PR!
+  push:
+    branches:
+    - main
+    paths:
+      - 'notebooks/**'
+      - 'src/**'
+      - 'test/**'
+      - 'requirements*.txt'
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version:
+          - "3.9"
+        package-extras:
+          - devel
+    steps:
+      # Do not remove: useful for debug purposes
+      - name: Dump event JSON and environment
+        run: cat "$GITHUB_EVENT_PATH"; env
+
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      # Enable Python for your testing
+      - name: Enable Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      #- uses: vemonet/setup-spark@v1
+      #  with:
+      #    spark-version: '3.1.2'
+      #    hadoop-version: '3.2'
+#
+      #- run: spark-submit --version
+
+      - name: Configure Azure Artifacts
+        run: |
+          set -e
+          pip install pip==22.1.1 keyring artifacts-keyring
+          echo "PIP_EXTRA_INDEX_URL=${{ secrets.AZURE_ARTIFACTS_URL }}" >> $GITHUB_ENV
+
+      - name: Install Python Dependencies
+        run: |
+          set -e
+          pip install -r requirements.txt
+          pip install -r requirements-devel.txt
+          pip install -r requirements-orch.txt
+
+      # Now install the Python package itself
+      #- name: Run init test
+      #  run: |
+      #    pytest test/tests/test_spark.py::test_init
+
+      - name: Run tests
+        run: |
+          python test/run_pytest.py

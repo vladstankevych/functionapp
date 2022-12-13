@@ -1,0 +1,3 @@
+# Extra dependencies for statsmodels features
+
+statsmodels~=0.13.2

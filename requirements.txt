@@ -1,0 +1,26 @@
+# D-CPFR Libraries - keep these updated!
+pg-ds-cf-cpfr-core~=0.7.7
+pg-ds-cf-cpfr-utils[spark,sklearn,statsmodels,lgbm,optuna,tsfeats]~=0.9.6
+
+# ML Core
+jupyter~=1.0.0
+numpy<1.22.0  # see https://github.com/aesara-devs/aesara/issues/715 but for theano
+pandas~=1.4.0
+mlflow==1.26.0 # Temp due to mlflow 1.26.1 introducing incompatible dependency on protobuf>=3.12.0 because currently matrixprofile (required by tsfresh) wants protobuf==3.11.2 (TODO: unpin when new matrixprofile is released that accepts a newer protobuf)
+# others are utils[EXTRAS]
+
+# Spark-related
+# pyspark managed by `utils[spark]` above
+
+# Bayesian modelling
+pymc3~=3.11.4
+xarray~=0.21.0  # managed by pymc3, but we are explicit here
+
+# Visualization
+matplotlib~=3.4.2
+seaborn~=0.11.1
+graphviz~=0.17
+
+# File types
+openpyxl~=3.0.7
+# netcdf4 is managed by xarray

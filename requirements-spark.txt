@@ -1,0 +1,21 @@
+# Extra dependencies for PySpark features
+
+# When Databricks instantiates a cluster, it installs its own pyspark on it into
+# the /databricks/spark/python/pyspark directory, always using the version that
+# corresponds to the Databricks Runtime version that was selected for that cluster,
+# effectively ignoring whatever was installed by conda or pip during creation of
+# the environment.
+# This means that in practice the version of pyspark specified here will only
+# have an effect on deployments outside of Databricks (e.g. local deployments).
+# It is therefore important to select the same version that corresponds to the
+# currently used Databricks runtime to avoid any discrepancies that could result
+# from testing on a different version locally versus Databricks.
+# The Databricks Runtime version currently used by our clusters is 9.1 (non-ML),
+# and the version of Spark (and pyspark) used by that runtime is 3.1.2
+# (see https://docs.databricks.com/release-notes/runtime/releases.html for details).
+# Therefore we use a "==" to ensure it will not resolve to a compatible newer version.
+pyspark==3.2.1
+
+# Alows using delta tables on local deployments
+delta-spark~=1.2.1
+pytest-spark

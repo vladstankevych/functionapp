@@ -1,15 +1,15 @@
 name: Deploy Python project to function app
 
+# -------- Secrets Used --------
+# GITHUB_TOKEN (always exists)
+# ACR_PULL_USERNAME
+# ACR_PULL_TOKEN
+# DATABRICKS_TOKEN
+
 on:
-  pull_request_target:
-    branches:
-    - main
-  push:
-    branches:
-      - main
-  release: # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#release
+  issue_comment:
     types:
-      - published
+      - created
     
 
 env:
@@ -30,6 +30,7 @@ jobs:
       run: |
         export PYTHON_VERSION=${{ env.PYTHON_VERSION }}
         echo ${{ github.event_name }}
+        echo ${{ github.event.issue.pull_request.head.sha }}
     
     - name: Docker meta
       uses: docker/metadata-action@v4

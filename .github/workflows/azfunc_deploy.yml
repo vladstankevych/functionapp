@@ -42,6 +42,13 @@ jobs:
     - name: Echo sha
       shell: bash
       run: echo ${{ steps.sha.outputs.result }}
+    - name: Set LOCAL_IMG env var
+      run: echo "LOCAL_IMG=${{ env.IMAGE_NAME }}:sha-${{ steps.sha.outputs.result }}" >> $GITHUB_ENV
+    - name: Create RUN_CPFR shortcut
+      run: |
+        echo "RUN_CPFR=docker run --rm ${{ env.LOCAL_IMG }} conda run --name cpfr" >> $GITHUB_ENV
+        echo ${{ env.LOCAL_IMG }}
+
     - name: Export somethin
       shell: bash
       run: |

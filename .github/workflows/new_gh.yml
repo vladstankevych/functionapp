@@ -31,7 +31,7 @@ jobs:
     - name: Output sha
       run: |
         echo "SHA:"
-        echo ${{ steps.comment-branch.outputs.head_ref }}
+        echo ${{ steps.comment-branch.outputs.head_sha }}
   
 #    # Depending on the comment body set corresponding variables
 #    - name: Choose an action

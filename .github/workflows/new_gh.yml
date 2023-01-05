@@ -20,16 +20,19 @@ jobs:
 
     # Get info about source branch of PR 
     # (because by default it's absent in github context when triggered by "issue_comment")
-    - name: Get PR ref and sha
-      id: get_pull_request_ref
-      uses: octokit/request-action@v2.x
+    - uses: xt0rted/pull-request-comment-branch@v1
+      id: comment-branch
+      
+    - uses: actions/checkout@v2
+      if: success()
       with:
-        route: GET /repos/:repository/pulls/:issue_id
-        repository: ${{ github.repository }}
-        issue_id: ${{ github.event.issue.number }}
-      env:
-        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-
+        ref: ${{ steps.comment-branch.outputs.head_ref }}
+        
+    - name: Output sha
+      run: |
+        echo "SHA:"
+        echo ${{ steps.comment-branch.outputs.head_ref }}
+  
 #    # Depending on the comment body set corresponding variables
 #    - name: Choose an action
 #      run: |
